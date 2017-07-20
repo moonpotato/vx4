@@ -15,12 +15,48 @@
 // Module internal declarations
 /////////////////////////////////////////////////////////////////////////
 
+/**
+ * Stores the status of each port. Each entry is a pointer to the
+ * structure describing the given port.
+ */
 static port_entry *ports[PORT_NUM_PORTS];
 
+/**
+ * Registers a handler on a specific port.
+ *
+ * IN num: The port to bind.
+ * IN cfg: A structure defining the handler for the port.
+ *
+ * NOTE: The caller retains ownership of the struct passed in as cfg, and
+ * it MUST remain allocated until a corresponding call to unbind_port.
+ *
+ * Returns:
+ * ERR_NOERR: The handler was successfully added to the port.
+ * ERR_INVAL: The port specified was out of range (can never exist).
+ * ERR_PCOND: The port specified was already in use.
+ */
 static error_t bind_port(port_t num, port_entry *cfg);
+
+/**
+ * Unregisters a handler on a specific port.
+ *
+ * IN num: The port to clear.
+ *
+ * Returns:
+ * ERR_NOERR: The handler was successfully removed.
+ * ERR_INVAL: The port specified was out of range (can never exist).
+ * ERR_PCOND: The port specified is currently unbound.
+ */
 static error_t unbind_port(port_t num);
 
+/**
+ * Returns the lowest-numbered port unused (ready to be allocated).
+ */
 static port_t next_unused();
+
+/**
+ * Marks a port as available for reuse.
+ */
 static void mark_unused(port_t num);
 
 /////////////////////////////////////////////////////////////////////////
@@ -38,6 +74,8 @@ error_t port_remove(port_t num)
 {
 	error_t stat = unbind_port(num);
 
+	// If the unbinding failed, the port may not be valid
+	// so don't attempt to reuse it.
 	if (stat == ERR_NOERR) {
 		mark_unused(num);
 	}
@@ -57,6 +95,8 @@ error_t port_write(port_t num, uint32_t data)
 		return ERR_PCOND;
 	}
 
+	// Default write handler just swallows the data
+	// So we don't error on NULL here
 	if (curr->write != NULL) {
 		curr->write(data);
 	}
@@ -80,6 +120,7 @@ error_t port_read(port_t num, uint32_t *data)
 		*data = curr->read();
 	}
 	else {
+		// Default read handler is an endless stream of zeros
 		*data = 0;
 	}
 
@@ -146,6 +187,7 @@ port_t next_unused()
 
 void mark_unused(port_t num)
 {
+	// We want to prefer low-numbered ports
 	if (num < next_alloc) {
 		next_alloc = num;
 	}
