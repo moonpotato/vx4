@@ -8,6 +8,7 @@
 // Internal constants + helper macros
 /////////////////////////////////////////////////////////////////////////
 
+// Enums are typically represented by signed types, so check positive
 #define IS_VALID_REGISTER(reg) (((reg) < REG_NUM_REGS) && ((reg) >= 0))
 
 /////////////////////////////////////////////////////////////////////////
@@ -19,6 +20,17 @@ static uint32_t registers[REG_NUM_REGS];
 /////////////////////////////////////////////////////////////////////////
 // Interface functions
 /////////////////////////////////////////////////////////////////////////
+
+/**
+ * Caution: here lies quite a bit of pointer arithmetic, though the
+ * basics are quite similar in each case. Taking reg_read_high_byte
+ * as an example:
+ *
+ * &registers[which] takes the address of register in question.
+ * Then we cast it with (uint8_t *) and treat it as an array of
+ * 4 bytes. The high byte is bits [8, 15] and is thus at position
+ * 1 in the new "array".
+ */
 
 error_t reg_read_low_byte(reg_name which, uint8_t *dest)
 {
