@@ -1,0 +1,37 @@
+#pragma once
+
+#include "error.h"
+
+#include <stdint.h>
+
+/////////////////////////////////////////////////////////////////////////
+// Types declarations
+/////////////////////////////////////////////////////////////////////////
+
+typedef uint32_t port_t;
+typedef uint32_t psize_t;
+
+typedef void (*port_out_pf)(uint32_t);
+typedef uint32_t (*port_in_pf)();
+
+typedef struct _port_entry {
+	const char *ident;
+	port_out_pf write;
+	port_in_pf read;
+} port_entry;
+
+/////////////////////////////////////////////////////////////////////////
+// Constants + helper macros
+/////////////////////////////////////////////////////////////////////////
+
+#define PORT_NUM_PORTS 4096 // Chosen arbitrarily
+
+/////////////////////////////////////////////////////////////////////////
+// Function declarations
+/////////////////////////////////////////////////////////////////////////
+
+extern error_t port_insert(port_entry *cfg, port_t *num);
+extern error_t port_remove(port_t num);
+
+extern error_t port_write(port_t num, uint32_t data);
+extern error_t port_read(port_t num, uint32_t *data);
