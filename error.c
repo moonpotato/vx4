@@ -34,7 +34,7 @@ noreturn void error_exit(error_t err_code, const char *file, unsigned line, cons
 			break;
 
 		case ERR_EXTERN:
-			msg = "An error occurred in an external function";
+			msg = "An error occurred in an external function or file";
 			break;
 
 		case ERR_FILE:
