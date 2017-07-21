@@ -116,7 +116,7 @@ void command_issue(uint32_t command_part)
 			// A null byte doesn't interrupt here
 			// We might actually _want_ a zero as our data
 			// But if we've issued a one-word command, this means
-			// We need to write
+			// We need to write _two_ zeros to correctly reset
 			state = CMD_DONE;
 			break;
 
