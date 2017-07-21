@@ -16,5 +16,5 @@ $(EXEC): $(OBJECTS)
 
 .PHONY: clean
 clean:
-	rm $(EXEC) $(OBJECTS)
+	rm -f $(EXEC) $(OBJECTS)
 
