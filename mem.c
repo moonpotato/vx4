@@ -20,6 +20,10 @@
 // Module internal declarations
 /////////////////////////////////////////////////////////////////////////
 
+/**
+ * Each entry defaults to being unmapped, and is mapped only
+ * when required.
+ */
 typedef struct _mem_blk_entry {
 	enum _mem_type {
 		MAP_NONE,
@@ -27,15 +31,64 @@ typedef struct _mem_blk_entry {
 		MAP_DEVICE,
 	} type;
 
-	mblock_t *base;
+	mblock_t *base; // Pointer to the beginning of a MEM_BLK_SIZE array
 } mem_blk_entry;
 
+// Every entry is prefilled to MAP_NONE (unloaded).
 static mem_blk_entry memory[MEM_NUM_BLKS];
 
+/**
+ * Sets an empty block to be part of main system memory, and allocates
+ * memory to store the block. The block type after successful completion
+ * of this function is MAP_SYSTEM.
+ *
+ * IN block: The block to operate on.
+ *
+ * Returns:
+ * ERR_NOERR: The block was successfully created.
+ * ERR_PCOND: The block wasn't empty (MAP_NONE).
+ */
 static error_t create_system_block(mem_blk_entry *block);
+
+/**
+ * Deletes a block of memory previously allocated as system memory,
+ * and sets it to be unused (MAP_NONE).
+ *
+ * IN block: The block to clear.
+ *
+ * Returns:
+ * ERR_NOERR: The block was successfully deleted.
+ * ERR_PCOND: The block wasn't MAP_SYSTEM.
+ */
 static error_t delete_system_block(mem_blk_entry *block);
 
+/**
+ * Sets an empty block to be part of a memory-mapped virtual device.
+ * The memory to map must be provided, and remain allocated until
+ * a corresponding call to remove_device_block. On successful completion,
+ * the block type is MAP_DEVICE.
+ *
+ * IN block: The block to operate on.
+ * IN mem: A block of memory at least MEM_BLK_SIZE in length.
+ *
+ * Returns:
+ * ERR_NOERR: The block was successfully mapped.
+ * ERR_PCOND: The block wasn't empty (MAP_NONE).
+ */
 static error_t install_device_block(mem_blk_entry *block, mblock_t *mem);
+
+/**
+ * Deletes a block of memory previously allocated as virtual device
+ * memory, and sets it to be unused (MAP_NONE). After successful
+ * completion, the memory used to map the block IS NOT delete, this
+ * is the responsibility of the caller.
+ *
+ * IN block: The block to clear.
+ *
+ * Returns:
+ * ERR_NOERR: The block was successfully deleted.
+ * ERR_PCOND: The block wasn't MAP_SYSTEM.
+ */
 static error_t remove_device_block(mem_blk_entry *block);
 
 /////////////////////////////////////////////////////////////////////////
@@ -153,12 +206,12 @@ uint32_t mem_read_string(maddr_t base, char *dest, msize_t max)
 	return read;
 }
 
-uint32_t mem_read_mem(maddr_t base, void *dest, msize_t max)
+uint32_t mem_read_mem(maddr_t base, void *dest, msize_t num)
 {
 	uint8_t *udest = (uint8_t *)dest;
 	msize_t read = 0;
 
-	while (read < max) {
+	while (read < num) {
 		error_t stat = mem_read_byte(base, udest);
 
 		if (stat != ERR_NOERR) {
