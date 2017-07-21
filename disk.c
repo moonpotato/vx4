@@ -144,9 +144,6 @@ static uint32_t command_reply(port_id num);
 static void data_write(port_id num, uint32_t data);
 static uint32_t data_read(port_id num);
 
-static void write_operation(disk_info_entry *disk, disk_operation *action);
-static uint32_t read_operation(disk_info_entry *disk, disk_operation *action);
-
 // Every disk has the same port structure
 static port_entry disk_port[] = {
 	{"Disk v1 command", command_recv, command_reply},
@@ -385,7 +382,7 @@ void mark_unused(disk_id num)
 		next_alloc = num;
 	}
 }
-struct
+
 disk_id identify_disk(port_id port)
 {
 	for (disk_id i = 0; IS_VALID_DISK(i); ++i) {
@@ -435,8 +432,22 @@ void data_write(port_id num, uint32_t data)
 		return;
 	}
 
-	curr_op[curr].data = data;
-	write_operation(&disks[curr], &curr_op[curr]);
+	disk_info_entry *disk = &disks[curr];
+	disk_operation *action = &curr_op[curr];
+
+	action->data = data;
+
+	if (!disk->active) {
+		action->res = DS_ERROR;
+		return;
+	}
+
+	switch (action->act) {
+		default:
+		case DA_NONE:
+			action->res = DS_ERROR;
+			return;
+	}
 }
 
 uint32_t data_read(port_id num)
@@ -448,41 +459,23 @@ uint32_t data_read(port_id num)
 		return 0;
 	}
 
-	// This needs special-casing because read_operation
-	// Doesn't know the disk number
-	if (curr_op[curr].act == DA_NUM) {
-		curr_op[curr].res = DS_OK;
-		return curr;
-	}
+	disk_info_entry *disk = &disks[curr];
+	disk_operation *action = &curr_op[curr];
 
-	return read_operation(&disks[curr], &curr_op[curr]);
-}
-
-void write_operation(disk_info_entry *disk, disk_operation *action)
-{
-	if (!disk->active) {
-		action->res = DS_ERROR;
-		return;
-	}
-
-	switch (action->act) {
-		default:
-			action->res = DS_ERROR;
-			return;
-	}
-}
-
-uint32_t read_operation(disk_info_entry *disk, disk_operation *action)
-{
 	if (!disk->active) {
 		action->res = DS_ERROR;
 		return 0;
 	}
 
 	switch (action->act) {
-		default:
+	default:
+		case DA_NONE:
 			action->res = DS_ERROR;
 			return 0;
+
+		case DA_NUM:
+			action->res = DS_OK;
+			return curr;
 
 		case DA_SEEK:
 			action->res = DS_OK;
