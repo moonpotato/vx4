@@ -13,7 +13,7 @@
 /**
  * Configures the command that will be executed by command_execute.
  *
- * A command consists of an action word and, optionally, an addtitional
+ * A command consists of an action word and, optionally, an additional
  * data word. Reading a zero as either the action word or after the
  * command is locked (both the action and data words have been read)
  * causes a reset. If a command is issued without a data word, two zeros
