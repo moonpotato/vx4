@@ -20,8 +20,21 @@ typedef uint8_t disk_block; // Compatible with mem_block
 
 #define DISK_MAX_DISKS 256 // Chosen arbitrarily
 
+typedef enum _disk_action {
+    DA_NONE,
+    DA_ADDR,
+} disk_action;
+
+typedef enum _disk_state {
+    DS_OK,
+    DS_WAIT,
+    DS_ERROR,
+} disk_state;
+
 /////////////////////////////////////////////////////////////////////////
 // Function declarations
 /////////////////////////////////////////////////////////////////////////
 
+extern error_t disk_install(const char *filename, disk_id *num);
 
+extern error_t disk_remove(disk_id num);
