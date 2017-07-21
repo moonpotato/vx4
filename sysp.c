@@ -19,9 +19,10 @@
  * causes a reset. If a command is issued without a data word, two zeros
  * must be written to properly reset the port.
  *
+ * IN num: The port that caused the function to be called. Ignored.
  * IN command_part: The word to be added to the command.
  */
-static void command_issue(uint32_t command_part);
+static void command_issue(port_t num, uint32_t command_part);
 
 /**
  * Executes the command configured by command_issue.
@@ -31,9 +32,11 @@ static void command_issue(uint32_t command_part);
  * results. If the command needs to be reset, command_issue must
  * receive a reset request, then have the command re-issued.
  *
+ * IN num: The port that caused the function to be called. Ignored.
+ *
  * Returns: The value produced by this step of the command.
  */
-static uint32_t command_execute();
+static uint32_t command_execute(port_t num);
 
 /**
  * Resets all command procedures. Called in the operation of
@@ -96,8 +99,10 @@ error_t remove_system_handler()
 // Module internal functions
 /////////////////////////////////////////////////////////////////////////
 
-void command_issue(uint32_t command_part)
+void command_issue(port_t num, uint32_t command_part)
 {
+	(void)num;
+
 	static cmd_state state = CMD_START;
 
 	switch (state) {
@@ -130,8 +135,10 @@ void command_issue(uint32_t command_part)
 	}
 }
 
-uint32_t command_execute()
+uint32_t command_execute(port_t num)
 {
+	(void)num;
+
 	switch (curr_op.act) {
 		case SYS_PORTINFO:
 			return read_port_ident(curr_op.data, false);

@@ -8,11 +8,13 @@
 // Types declarations
 /////////////////////////////////////////////////////////////////////////
 
-typedef uint32_t port_t;
-typedef uint32_t psize_t; // A size type for ranging over the port array
+typedef uint16_t port_t;
+typedef uint16_t psize_t; // A size type for ranging over the port array
 
-typedef void (*port_out_pf)(uint32_t);
-typedef uint32_t (*port_in_pf)();
+// The port callbacks receive the port they were called from as an argument
+// This allows for binding one function to multiple ports
+typedef void (*port_out_pf)(port_t, uint32_t);
+typedef uint32_t (*port_in_pf)(port_t);
 
 typedef struct _port_entry {
 	const char *ident; // A string identifying the owner of the port

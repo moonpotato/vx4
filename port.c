@@ -98,7 +98,7 @@ error_t port_write(port_t num, uint32_t data)
 	// Default write handler just swallows the data
 	// So we don't error on NULL here
 	if (curr->write != NULL) {
-		curr->write(data);
+		curr->write(num, data);
 	}
 
 	return ERR_NOERR;
@@ -117,7 +117,7 @@ error_t port_read(port_t num, uint32_t *data)
 	}
 
 	if (curr->read != NULL) {
-		*data = curr->read();
+		*data = curr->read(num);
 	}
 	else {
 		// Default read handler is an endless stream of zeros
