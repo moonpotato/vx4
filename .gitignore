@@ -130,3 +130,5 @@ flycheck_*.el
 *.dump
 *.bin
 
+# Valgrind and analysis tool output
+*.xml
