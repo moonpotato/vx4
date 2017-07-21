@@ -6,6 +6,7 @@
 #include "textio.h"
 #include "sysp.h"
 #include "fwload.h"
+#include "disk.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -22,6 +23,12 @@ int main(int argc, char *argv[])
 	// So don't bother checking errors at this stage-
 	install_system_handler();
 	install_textio_handler();
+
+	// Install the main disk
+	disk_id main_disk;
+	DIE_ON(disk_install("potato.bin", &main_disk));
+
+	mem_dump();
 
 	return EXIT_SUCCESS;
 }
