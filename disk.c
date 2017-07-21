@@ -477,7 +477,7 @@ uint32_t data_read(port_id num)
 	}
 
 	switch (action->act) {
-	default:
+		default:
 		case DA_NONE:
 			action->res = DS_ERROR;
 			return 0;
