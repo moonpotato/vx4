@@ -13,8 +13,8 @@
 
 int main(int argc, char *argv[])
 {
-    // Load core firmware images
-    // These are all considered critical, so we fail if any one fails
+	// Load core firmware images
+	// These are all considered critical, so we fail if any one fails
 	DIE_ON(firmware_load(0x0, "fw.bin"));
 
 	// Install core I/O ports
@@ -23,6 +23,6 @@ int main(int argc, char *argv[])
 	install_system_handler();
 	install_textio_handler();
 
-    return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 
