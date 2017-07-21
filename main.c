@@ -19,10 +19,10 @@ int main(int argc, char *argv[])
 
 	// Install core I/O ports
 	// The only way these report failure is if there are no available ports
-	// So don't bother at this stage
+	// So don't bother checking errors at this stage-
 	install_system_handler();
 	install_textio_handler();
 
-    return  EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
 
