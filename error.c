@@ -58,6 +58,6 @@ noreturn void error_exit(error_t err_code, const char *file, unsigned line, cons
 		fprintf(stderr, "%s.\n", info);
 	}
 
-	_Exit(err_code);
+	exit(err_code);
 }
 
