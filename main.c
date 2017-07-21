@@ -4,6 +4,7 @@
 #include "port.h"
 #include "register.h"
 #include "textio.h"
+#include "sysp.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -21,13 +22,23 @@ uint32_t send_word()
 
 int main()
 {
+	install_system_handler();
 	install_textio_handler();
 
-	port_write(0x0, 'h');
-	port_write(0x0, 'e');
-	port_write(0x0, 'l');
-	port_write(0x0, 'l');
-	port_write(0x0, '\n');
+	for (int i = 0; i < 32; ++i) {
+		port_write(0x0, SYS_CLEAR);
 
+		port_write(0x0, SYS_PORTINFO);
+		port_write(0x0, i);
+
+		uint32_t data;
+
+		do {
+			port_read(0x0, &data);
+			printf("%c", data);
+		} while (data);
+
+		putchar('\n');
+	}
 }
 
