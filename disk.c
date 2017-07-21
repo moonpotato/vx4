@@ -447,6 +447,15 @@ void data_write(port_id num, uint32_t data)
 		case DA_NONE:
 			action->res = DS_ERROR;
 			return;
+
+		case DA_SEEK:
+			if (seek_disk(num, data, true) == ERR_NOERR) {
+				action->res = DS_OK;
+			}
+			else {
+				action->res = DS_ERROR;
+			}
+			return;
 	}
 }
 
