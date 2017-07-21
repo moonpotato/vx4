@@ -159,6 +159,8 @@ static error_t bind_disk(disk_id num, const char *filename)
 	rewind(curr->file);
 	fread(curr->buffer, 1, MEM_BLK_SIZE, curr->file);
 
+	mem_map_device(DISK_MMAP_ADDR(num), curr->buffer);
+
 	error_t stat = port_install(&disk_port[0], &curr->cmd_port);
 	if (stat != ERR_NOERR) {
 		return ERR_PORT;
@@ -201,6 +203,8 @@ static error_t unbind_disk(disk_id num, error_t partial)
 	if (partial == ERR_NOMEM || partial == ERR_EXTERN) {
 		return ERR_NOERR;
 	}
+
+	mem_unmap_device(DISK_MMAP_ADDR(num));
 
 	free(curr->buffer);
     curr->buffer = NULL;
