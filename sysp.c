@@ -13,6 +13,8 @@
 static void command_issue(uint32_t command_part);
 static uint32_t command_execute();
 
+static void command_clear();
+
 static port_entry system_port = {
 	"System command",
 	command_issue,
@@ -30,6 +32,12 @@ typedef struct _sys_operation {
 static sys_operation curr_op;
 
 static uint32_t read_port_ident(port_t port, bool reset);
+
+typedef enum _cmd_state {
+	CMD_START,
+	CMD_MID,
+	CMD_DONE,
+} cmd_state;
 
 /////////////////////////////////////////////////////////////////////////
 // Interface functions
@@ -49,34 +57,39 @@ error_t remove_system_handler()
 // Module internal functions
 /////////////////////////////////////////////////////////////////////////
 
-static void command_issue(uint32_t command_part)
+void command_issue(uint32_t command_part)
 {
-	if (command_part == SYS_CLEAR) {
-		curr_op.act = SYS_CLEAR;
-		curr_op.data = 0;
+	static cmd_state state = CMD_START;
 
-		read_port_ident(0, true);
-	}
-	else if (curr_op.act == SYS_CLEAR) {
-		curr_op.act = (int)command_part;
-	}
-	else {
-		curr_op.data = command_part;
+	switch (state) {
+		case CMD_START:
+			if (command_part == SYS_CLEAR) {
+				command_clear();
+				state = CMD_START;
+			}
+			else {
+				curr_op.act = (int)command_part;
+				state = CMD_MID;
+			}
+			break;
+
+		case CMD_MID:
+			curr_op.data = command_part;
+			state = CMD_DONE;
+			break;
+
+		case CMD_DONE:
+			if (command_part == SYS_CLEAR) {
+				command_clear();
+				state = CMD_START;
+			}
+			break;
 	}
 }
 
-static uint32_t command_execute()
+uint32_t command_execute()
 {
-	switch (curr_op.act)
-	{
-		case SYS_RESET:
-			//TODO
-			return -1;
-
-		case SYS_HALT:
-			//TODO
-			return -1;
-
+	switch (curr_op.act) {
 		case SYS_PORTINFO:
 			return read_port_ident(curr_op.data, false);
 
@@ -84,6 +97,14 @@ static uint32_t command_execute()
 		default:
 			return 0;
 	}
+}
+
+void command_clear()
+{
+	curr_op.act = SYS_CLEAR;
+	curr_op.data = 0;
+
+	read_port_ident(0, true);
 }
 
 uint32_t read_port_ident(port_t port, bool reset)
