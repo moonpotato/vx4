@@ -12,7 +12,6 @@
 /////////////////////////////////////////////////////////////////////////
 
 #define IS_VALID_DISK(disk) ((disk) < DISK_MAX_DISKS)
-
 #define IS_VALID_SIZE(size) (MEM_BLOCK_MASK(size) == 0)
 
 /////////////////////////////////////////////////////////////////////////
@@ -25,6 +24,7 @@ typedef struct _disk_info_entry {
 
 	mem_addr loc; // Must be a multiple of MEM_BLK_SIZE
 	disk_block *buffer;
+	disk_addr off; // The offset of the window into the file
 
 	port_id cmd_port;
 	port_id data_port;
@@ -212,30 +212,36 @@ static uint32_t data_read(port_id num)
 
 static void write_operation(disk_info_entry *disk, disk_operation *action)
 {
-	(void)disk;
+	if (!disk->active) {
+		action->res = DS_ERROR;
+		return;
+	}
+
 	switch (action->act) {
 		default:
 			action->res = DS_ERROR;
-			break;
+			return;
 	}
 }
 
 static uint32_t read_operation(disk_info_entry *disk, disk_operation *action)
 {
+	if (!disk->active) {
+		action->res = DS_ERROR;
+		return 0;
+	}
+
 	switch (action->act) {
 		default:
 			action->res = DS_ERROR;
 			return 0;
 
 		case DA_ADDR:
-			if (disk->active) {
-				action->res = DS_OK;
-				return disk->loc;
-			}
-			else {
-				action->res = DS_ERROR;
-				return 0;
-			}
-			break;
+			action->res = DS_OK;
+			return disk->loc;
+
+		case DA_SEEK:
+			action->res = DS_OK;
+			return disk->off;
 	}
 }
