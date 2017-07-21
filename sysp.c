@@ -111,34 +111,42 @@ void command_clear()
 
 uint32_t read_port_ident(port_t port, bool reset)
 {
+	static cmd_state state = CMD_START;
+
 	static const char *ident = NULL;
 	static size_t pos = 0;
-	static bool done = false;
 
 	if (reset) {
 		ident = NULL;
 		pos = 0;
-		done = false;
+
+		state = CMD_START;
 		return 0;
 	}
 
-	if (done) {
-		return 0;
+	char out;
+
+	switch (state) {
+		case CMD_START:
+			ident = port_get_ident(port);
+			state = CMD_MID;
+			// fallthrough
+
+		case CMD_MID:
+			if (ident == NULL) {
+				out = 0;
+			}
+			else {
+				out = ident[pos++];
+			}
+			break;
+
+		case CMD_DONE:
+			return 0;
 	}
 
-	if (pos == 0) {
-		ident = port_get_ident(port);
-	}
-
-	if (ident == NULL) {
-		done = true;
-		return 0;
-	}
-
-	char out = ident[pos++];
-
-	if (out == '\0') {
-		done = true;
+	if (out == 0) {
+		state = CMD_DONE;
 	}
 
 	return out;
