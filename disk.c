@@ -14,6 +14,9 @@
 #define IS_VALID_DISK(disk) ((disk) < DISK_MAX_DISKS)
 #define IS_VALID_SIZE(size) (MEM_BLOCK_MASK(size) == 0)
 
+#define BEGIN_MMAP_ADDR (MEM_BLK_SIZE * (MEM_NUM_BLKS - DISK_MAX_DISKS))
+#define DISK_MMAP_ADDR(disk) (BEGIN_MMAP_ADDR + (disk * MEM_BLK_SIZE))
+
 /////////////////////////////////////////////////////////////////////////
 // Module internal declarations
 /////////////////////////////////////////////////////////////////////////
@@ -22,9 +25,8 @@ typedef struct _disk_info_entry {
 	const char *name;
 	bool active;
 
-	mem_addr loc; // Must be a multiple of MEM_BLK_SIZE
-	disk_block *buffer;
 	disk_addr off; // The offset of the window into the file
+	disk_block *buffer;
 
 	port_id cmd_port;
 	port_id data_port;
@@ -235,10 +237,6 @@ static uint32_t read_operation(disk_info_entry *disk, disk_operation *action)
 		default:
 			action->res = DS_ERROR;
 			return 0;
-
-		case DA_ADDR:
-			action->res = DS_OK;
-			return disk->loc;
 
 		case DA_SEEK:
 			action->res = DS_OK;

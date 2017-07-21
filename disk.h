@@ -22,7 +22,6 @@ typedef uint8_t disk_block; // Compatible with mem_block
 
 typedef enum _disk_action {
 	DA_NONE, // No action to perform
-	DA_ADDR, // Get/set the address of the disk memory-mapped buffer
 	DA_SEEK, // Get/set the offset of the memory map in the file
 } disk_action;
 
