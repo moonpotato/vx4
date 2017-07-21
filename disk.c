@@ -41,12 +41,77 @@ typedef struct _disk_info_entry {
 // Every entry is initialized to empty
 static disk_info_entry disks[DISK_MAX_DISKS];
 
+/**
+ * Writes the disk buffer out to its backing file. On success,
+ * the entire buffer (MEM_BLK_SIZE bytes) is written to bytes
+ * [off, off + MEM_BLK_SIZE) of the file.
+ *
+ * IN num: The disk number to sync.
+ *
+ * Returns:
+ * ERR_NOERR: The file was successfully written out.
+ * ERR_INVAL: The disk provided was out of range (can never exist).
+ * ERR_PCOND: The disk provided is not currently in use.
+ */
 static error_t sync_disk(disk_id num);
 
+/**
+ * Changes the offset of the file buffer and reloads it from the filesystem.
+ * Optionally, writes the old buffer to its position in the backing file
+ * first. If seeking fails, the buffer and its offset remains unchanged.
+ *
+ * IN num: The disk number to operate on.
+ * IN new_off: The new offset for the buffer window.
+ * IN sync_first: If true, write the old buffer before reading.
+ *
+ * Returns:
+ * ERR_NOERR: The file was successfully written out.
+ * ERR_INVAL: The disk provided was out of range (can never exist), or
+ * the new offset is too close to the end of the file.
+ * ERR_PCOND: The disk provided is not currently in use.
+ * ERR_FILE: Seeking in the file failed, or if sync_first == true, the
+ * call to sync_disk failed.
+ */
 static error_t seek_disk(disk_id num, disk_addr new_off, bool sync_first);
 
+/**
+ * Binds a file to a disk slot, maps a buffer into virtual memory at a set
+ * location and copies the first block of the file into that memory. The
+ * mapping location is determined by which disk number is used. On success,
+ * all members of the disk_info_entry struct are filled.
+ *
+ * IN num: The disk number to bind.
+ * IN filename: The name of the file to load and use as backing.
+ *
+ * Returns:
+ * ERR_NOERR: All operations completed successfully.
+ * ERR_INVAL: The disk provided was out of range (can never exist).
+ * ERR_PCOND: The disk provided is already in use.
+ * ERR_FILE: The file couldn't be opened.
+ * ERR_EXTERN: An error occurred in calculating the size of the file, or
+ * the file is too small.
+ * ERR_NOMEM: The buffer could not be allocated.
+ * ERR_PORT: An error occurred acquiring two ports to use for the disk,
+ * likely because there are no remaining ports.
+ */
 static error_t bind_disk(disk_id num, const char *filename);
 
+/**
+ * Unbinds the given disk from its file and disables it. If partial != 0,
+ * only reverses enough steps corresponding to a call to bind_disk that
+ * failed with the error code provided. If partial == 0, the buffer is synced
+ * one last time before deletion.
+ *
+ * IN num: The disk number to unbind.
+ * IN partial: An error code of the failed bind_disk call to revert.
+ *
+ * Returns:
+ * ERR_NOERR: All operations completed successfully.
+ * ERR_INVAL: The disk provided was out of range (can never exist).
+ * ERR_PCOND: The disk is already unbound.
+ * ERR_FILE: The disk was successfully unbound, but writing it back to
+ * file may have failed.
+ */
 static error_t unbind_disk(disk_id num, error_t partial);
 
 /**
@@ -68,6 +133,9 @@ typedef struct _disk_operation {
 // Every disk has a command state with it
 static disk_operation curr_op[DISK_MAX_DISKS];
 
+/**
+ * Calculate which disk is attached to a port.
+ */
 static disk_id identify_disk(port_id port);
 
 static void command_recv(port_id num, uint32_t command);
@@ -317,7 +385,7 @@ void mark_unused(disk_id num)
 		next_alloc = num;
 	}
 }
-
+struct
 disk_id identify_disk(port_id port)
 {
 	for (disk_id i = 0; IS_VALID_DISK(i); ++i) {
