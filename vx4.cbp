@@ -22,6 +22,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -29,11 +30,42 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wextra" />
 			<Add option="-Wall" />
+			<Add option="-std=gnu11" />
 		</Compiler>
+		<Unit filename="error.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="error.h" />
+		<Unit filename="fwload.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fwload.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="mem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mem.h" />
+		<Unit filename="module.h" />
+		<Unit filename="port.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="port.h" />
+		<Unit filename="register.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="register.h" />
+		<Unit filename="sysp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sysp.h" />
+		<Unit filename="textio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="textio.h" />
 		<Extensions>
 			<envvars />
 			<code_completion />
