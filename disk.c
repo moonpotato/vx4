@@ -41,6 +41,8 @@ typedef struct _disk_info_entry {
 // Every entry is initialized to empty
 static disk_info_entry disks[DISK_MAX_DISKS];
 
+static error_t sync_disk(disk_id num);
+
 static error_t bind_disk(disk_id num, const char *filename);
 
 static error_t unbind_disk(disk_id num, error_t partial);
@@ -121,6 +123,27 @@ error_t disk_remove(disk_id num)
 // Module internal functions
 /////////////////////////////////////////////////////////////////////////
 
+error_t sync_disk(disk_id num)
+{
+	if (!IS_VALID_DISK(num)) {
+		return ERR_INVAL;
+	}
+
+	disk_info_entry *curr = &disks[num];
+
+	if (curr->active) {
+        return ERR_PCOND;
+	}
+
+	if (fseek(curr->file, curr->off, SEEK_SET) != 0) {
+		return ERR_FILE;
+	}
+
+	fwrite(curr->buffer, 1, MEM_BLK_SIZE, curr->file);
+
+	return ERR_NOERR;
+}
+
 static error_t bind_disk(disk_id num, const char *filename)
 {
 	if (!IS_VALID_DISK(num)) {
@@ -193,11 +216,7 @@ static error_t unbind_disk(disk_id num, error_t partial)
 	if (partial == ERR_NOERR) {
         // If the file was opened correctly (and potentially used)
         // Then we need to write out its contents
-        if (fseek(curr->file, curr->off, SEEK_SET) != 0) {
-			return ERR_FILE;
-		}
-
-		fwrite(curr->buffer, 1, MEM_BLK_SIZE, curr->file);
+        stat = sync_disk(num);
 	}
 
 	curr->name = NULL;
