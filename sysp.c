@@ -10,12 +10,36 @@
 // Module internal declarations
 /////////////////////////////////////////////////////////////////////////
 
+/**
+ * Configures the command that will be executed by command_execute.
+ *
+ * A command consists of an action word and, optionally, an addtitional
+ * data word. Reading a zero as either the action word or after the
+ * command is locked (both the action and data words have been read)
+ * causes a reset. If a command is issued without a data word, two zeros
+ * must be written to properly reset the port.
+ *
+ * IN command_part: The word to be added to the command.
+ */
 static void command_issue(uint32_t command_part);
+
+/**
+ * Executes the command configured by command_issue.
+ *
+ * A command's execution is a stateful and potentially multi-stage
+ * process, so repeated calls are likely intended to produce different
+ * results. If the command needs to be reset, command_issue must
+ * receive a reset request, then have the command re-issued.
+ *
+ * Returns: The value produced by this step of the command.
+ */
 static uint32_t command_execute();
 
+/**
+ * Resets all command procedures. Called in the operation of
+ * command_issue.
+ */
 static void command_clear();
-
-static uint32_t read_port_ident(port_t port, bool reset);
 
 static port_entry system_port = {
 	"System command",
@@ -40,6 +64,19 @@ typedef enum _cmd_state {
 	CMD_MID,
 	CMD_DONE,
 } cmd_state;
+
+// Implementations of specific commands
+
+/**
+ * Fetches the name of a specific port, in parts.
+ *
+ * IN port: The port to describe. Only read on the first call after a reset.
+ * IN reset: If true, don't fetch data. Instead, reset the state.
+ *
+ * Returns: 0 if reset == true, otherwise the next byte in the ident
+ * string of the port specified on the first non-resetting call.
+ */
+static uint32_t read_port_ident(port_t port, bool reset);
 
 /////////////////////////////////////////////////////////////////////////
 // Interface functions
@@ -76,7 +113,10 @@ void command_issue(uint32_t command_part)
 			break;
 
 		case CMD_MID:
-			curr_op.data = command_part;
+			// A null byte doesn't interrupt here
+			// We might actually _want_ a zero as our data
+			// But if we've issued a one-word command, this means
+			// We need to write
 			state = CMD_DONE;
 			break;
 

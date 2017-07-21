@@ -7,10 +7,10 @@
 /////////////////////////////////////////////////////////////////////////
 
 typedef enum _sys_action {
-	SYS_CLEAR,
-	SYS_RESET,
-	SYS_HALT,
-	SYS_PORTINFO,
+	SYS_CLEAR, // Used to reset the port before issuing a command
+	SYS_RESET, // Reset the whole system
+	SYS_HALT, // Halt the system, quitting the program
+	SYS_PORTINFO, // Make the ident of a port available to be read
 } sys_action;
 
 /////////////////////////////////////////////////////////////////////////
