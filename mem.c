@@ -378,7 +378,7 @@ error_t create_system_block(mem_blk_entry *block)
 		return ERR_PCOND;
 	}
 
-	block->base = aligned_alloc(4096, MEM_BLK_SIZE);
+	block->base = calloc(MEM_BLK_SIZE, 1);
 
 	if (block->base == NULL) {
 		DIE_ON(ERR_NOMEM);
