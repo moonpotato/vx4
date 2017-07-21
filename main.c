@@ -3,6 +3,7 @@
 #include "mem.h"
 #include "port.h"
 #include "register.h"
+#include "textio.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -20,34 +21,13 @@ uint32_t send_word()
 
 int main()
 {
-	port_entry p_ent = {
-		"BLAFAEFBIASEFAEBEFD",
-		recv_word,
-		send_word
-	};
+	install_textio_handler();
 
-	port_t p;
-	port_insert(&p_ent, &p);
-	printf("Was allocated: %u\n", p);
-	port_insert(&p_ent, &p);
-	printf("Was allocated: %u\n", p);
-	port_insert(&p_ent, &p);
-	printf("Was allocated: %u\n", p);
-	port_insert(&p_ent, &p);
-	printf("Was allocated: %u\n", p);
-	port_insert(&p_ent, &p);
-	printf("Was allocated: %u\n", p);
+	port_write(0x0, 'h');
+	port_write(0x0, 'e');
+	port_write(0x0, 'l');
+	port_write(0x0, 'l');
+	port_write(0x0, '\n');
 
-	port_remove(0x2);
-
-	port_insert(&p_ent, &p);
-	printf("Was allocated: %u\n", p);
-	port_insert(&p_ent, &p);
-	printf("Was allocated: %u\n", p);
-
-	port_write(0x0, 1234);
-	port_write(0x2, 1111);
-	port_write(0x4, 4321);
-	DIE_ON(port_write(0x7, 1234));
 }
 
