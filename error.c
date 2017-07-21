@@ -37,6 +37,10 @@ noreturn void error_exit(error_t err_code, const char *file, unsigned line, cons
 			msg = "An error occurred in an external function";
 			break;
 
+		case ERR_FILE:
+			msg = "An error occurred reading or writing one or more files";
+			break;
+
 		default:
 			msg = "An unspecified error occurred";
 			break;

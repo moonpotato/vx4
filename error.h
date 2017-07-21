@@ -13,6 +13,7 @@ typedef enum _error_t {
 	ERR_INVAL,
 	ERR_AGAIN,
 	ERR_EXTERN,
+	ERR_FILE,
 } error_t;
 
 #define DIE_ON(expr) \
