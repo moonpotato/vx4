@@ -11,7 +11,7 @@
 
 typedef uint32_t maddr_t; // A virtual CPU memory address
 typedef uint32_t msize_t; // Size type for virtual CPU memory
-typedef uint8_t mblock_t; // Byte type to allow bytewise memory access
+typedef uint8_t mblock_t; // Byte type to allow byte-wise memory access
 
 /////////////////////////////////////////////////////////////////////////
 // Constants + helper macros
