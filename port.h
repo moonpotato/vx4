@@ -84,3 +84,12 @@ extern error_t port_write(port_t num, uint32_t data);
  */
 extern error_t port_read(port_t num, uint32_t *data);
 
+/**
+ * Returns the ident name of a particular port.
+ *
+ * IN num: The port number to access.
+ *
+ * Returns: The ident string for the given port, or NULL on error.
+ */
+extern const char *port_get_ident(port_t num);
+

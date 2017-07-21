@@ -127,6 +127,21 @@ error_t port_read(port_t num, uint32_t *data)
 	return ERR_NOERR;
 }
 
+const char *port_get_ident(port_t num)
+{
+	if (!IS_VALID_PORT(num)) {
+		return NULL;
+	}
+
+	const port_entry *curr = ports[num];
+
+	if (curr == NULL) {
+		return NULL;
+	}
+
+	return curr->ident;
+}
+
 /////////////////////////////////////////////////////////////////////////
 // Module internal functions
 /////////////////////////////////////////////////////////////////////////
