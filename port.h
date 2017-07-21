@@ -59,7 +59,7 @@ extern error_t port_install(port_entry *cfg, port_id *num);
 extern error_t port_remove(port_id num);
 
 /**
- * Writes a word to a given port, causing it to be recieved by
+ * Writes a word to a given port, causing it to be received by
  * a listening device.
  *
  * IN num: The port number to write. Must be in range [0, PORT_NUM_PORTS).
