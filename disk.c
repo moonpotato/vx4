@@ -4,8 +4,11 @@
 #include "mem.h"
 #include "port.h"
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
 
 /////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
@@ -23,13 +26,16 @@
 
 typedef struct _disk_info_entry {
 	const char *name;
-	bool active;
+	FILE *file;
+	size_t fsize;
 
-	disk_addr off; // The offset of the window into the file
 	disk_block *buffer;
+	bool active;
 
 	port_id cmd_port;
 	port_id data_port;
+
+	disk_addr off; // The offset of the window into the file
 } disk_info_entry;
 
 // Every entry is initialized to empty
@@ -37,7 +43,7 @@ static disk_info_entry disks[DISK_MAX_DISKS];
 
 static error_t bind_disk(disk_id num, const char *filename);
 
-static error_t unbind_disk(disk_id num);
+static error_t unbind_disk(disk_id num, error_t partial);
 
 /**
  * Returns the lowest-numbered disk unused (ready to be allocated).
@@ -83,12 +89,24 @@ error_t disk_install(const char *filename, disk_id *num)
 {
 	*num = next_unused();
 
-	return bind_disk(*num, filename);
+	error_t stat = bind_disk(*num, filename);
+
+	if (stat == ERR_INVAL || stat == ERR_PCOND) {
+		return ERR_PCOND;
+	}
+
+	// If we failed halfway through, we need to clean up
+	if (stat != ERR_NOERR) {
+		unbind_disk(*num, stat);
+		mark_unused(*num);
+	}
+
+	return stat;
 }
 
 error_t disk_remove(disk_id num)
 {
-	error_t stat = unbind_disk(num);
+	error_t stat = unbind_disk(num, ERR_NOERR);
 
 	// If the unbinding failed, the disk may not be able to be reused
 	// So we don't attempt to reuse it
@@ -105,12 +123,98 @@ error_t disk_remove(disk_id num)
 
 static error_t bind_disk(disk_id num, const char *filename)
 {
+	if (!IS_VALID_DISK(num)) {
+		return ERR_INVAL;
+	}
 
+	disk_info_entry *curr = &disks[num];
+
+	if (curr->active) {
+        return ERR_PCOND;
+	}
+
+	curr->name = filename;
+	curr->active = true;
+	curr->off = 0;
+
+	curr->file = fopen(filename, "r+b");
+	if (curr->file == NULL) {
+        return ERR_FILE;
+	}
+
+	if (fseek(curr->file, 0, SEEK_END) != 0) {
+		return ERR_EXTERN;
+	}
+
+	curr->fsize = (size_t)ftell(curr->file);
+	if (curr->fsize < MEM_BLK_SIZE) {
+		return ERR_EXTERN;
+	}
+
+	curr->buffer = malloc(MEM_BLK_SIZE);
+	if (curr->buffer == NULL) {
+		return ERR_NOMEM;
+	}
+
+	rewind(curr->file);
+	fread(curr->buffer, 1, MEM_BLK_SIZE, curr->file);
+
+	error_t stat = port_install(&disk_port[0], &curr->cmd_port);
+	if (stat != ERR_NOERR) {
+		return ERR_PORT;
+	}
+
+	stat = port_install(&disk_port[1], &curr->data_port);
+	if (stat != ERR_NOERR) {
+		// Clean up the successfully created port first
+		port_remove(curr->cmd_port);
+		return ERR_PORT;
+	}
+
+	return ERR_NOERR;
 }
 
-static error_t unbind_disk(disk_id num)
+static error_t unbind_disk(disk_id num, error_t partial)
 {
+	if (!IS_VALID_DISK(num)) {
+		return ERR_INVAL;
+	}
 
+	disk_info_entry *curr = &disks[num];
+
+	if (!curr->active) {
+        return ERR_PCOND;
+	}
+
+	curr->name = NULL;
+	curr->active = false;
+	curr->off = 0;
+	curr->fsize = 0;
+
+	if (partial == ERR_FILE) {
+		return ERR_NOERR;
+	}
+
+	fclose(curr->file);
+	curr->file = NULL;
+
+	if (partial == ERR_NOMEM || partial == ERR_EXTERN) {
+		return ERR_NOERR;
+	}
+
+	free(curr->buffer);
+    curr->buffer = NULL;
+
+    if (partial == ERR_PORT) {
+		return ERR_NOERR;
+    }
+
+	port_remove(curr->cmd_port);
+	curr->cmd_port = 0;
+	port_remove(curr->data_port);
+	curr->data_port = 0;
+
+	return ERR_NOERR;
 }
 
 // Used to hold state for the following two functions
