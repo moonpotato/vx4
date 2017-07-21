@@ -5,23 +5,14 @@
 #include "register.h"
 #include "textio.h"
 #include "sysp.h"
+#include "fwload.h"
 
 #include <stdio.h>
 #include <stdint.h>
 
-void recv_word(uint32_t data)
-{
-	printf("Device got: %u\n", data);
-}
-
-uint32_t send_word()
-{
-	printf("Device was read\n");
-	return 555;
-}
-
 int main()
 {
+	DIE_ON(firmware_load(0x0, "fw.bin"));
 	install_system_handler();
 	install_textio_handler();
 
@@ -40,5 +31,7 @@ int main()
 
 		putchar('\n');
 	}
+
+	mem_dump();
 }
 
