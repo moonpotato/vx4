@@ -4,6 +4,9 @@
 #include "mem.h"
 #include "port.h"
 
+#include <stdbool.h>
+#include <stdint.h>
+
 /////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
 /////////////////////////////////////////////////////////////////////////
@@ -18,11 +21,7 @@
 
 typedef struct _disk_info_entry {
 	const char *name;
-	enum _disk_type {
-		DT_NONE,
-		DT_FILE,
-		DT_VIRT,
-	} type;
+	bool active;
 
 	mem_addr loc; // Must be a multiple of MEM_BLK_SIZE
 	disk_block *buffer;
@@ -120,9 +119,9 @@ disk_id next_unused()
 	// First check the next_alloc variable
 	// If it's good, we're good
 	// Otherwise we have to go hunting
-	if (disks[next_alloc].type != DT_NONE) {
+	if (disks[next_alloc].active) {
 		for (disk_id i = 0; IS_VALID_DISK(i); ++i) {
-			if (disks[i].type == DT_NONE) {
+			if (!disks[i].active) {
 				next_alloc = i;
 				break;
 			}
@@ -223,14 +222,13 @@ static void write_operation(disk_info_entry *disk, disk_operation *action)
 
 static uint32_t read_operation(disk_info_entry *disk, disk_operation *action)
 {
-	(void)disk;
 	switch (action->act) {
 		default:
 			action->res = DS_ERROR;
 			return 0;
 
 		case DA_ADDR:
-			if (disk->type != DT_NONE) {
+			if (disk->active) {
 				action->res = DS_OK;
 				return disk->loc;
 			}
