@@ -138,6 +138,15 @@ static disk_operation curr_op[DISK_MAX_DISKS];
  */
 static disk_id identify_disk(port_id port);
 
+/**
+ * The following 4 functions provide the callbacks for the command and data
+ * ports of each disk. A typical command cycle is as follows:
+ *
+ * - Write the command to the command port.
+ * - Interact with the disk via writing and reading the data port.
+ * - Checking the success of any actions by reading the command port.
+ */
+
 static void command_recv(port_id num, uint32_t command);
 static uint32_t command_reply(port_id num);
 
