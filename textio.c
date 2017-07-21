@@ -9,15 +9,28 @@
 // Module internal declarations
 /////////////////////////////////////////////////////////////////////////
 
+/**
+ * Writes a character to the console.
+ *
+ * IN c: The unsigned char to write, promoted to 32 bits.
+ */
 static void console_write(uint32_t c);
+
+/**
+ * Reads a character from the console
+ *
+ * Returns: The unsigned char read, promoted to 32 bits,
+ * or 0 on error.
+ */
 static uint32_t console_read();
 
 static port_entry text_port = {
 	"Generic serial I/O",
-	console_write,
-	console_read
+	console_write, // Port writes go to console
+	console_read // Port reads come from console
 };
 
+// We need a place to store the port number we are assigned
 static port_t assigned_port;
 
 /////////////////////////////////////////////////////////////////////////
