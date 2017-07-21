@@ -15,6 +15,8 @@ static uint32_t command_execute();
 
 static void command_clear();
 
+static uint32_t read_port_ident(port_t port, bool reset);
+
 static port_entry system_port = {
 	"System command",
 	command_issue,
@@ -29,10 +31,10 @@ typedef struct _sys_operation {
 	uint32_t data;
 } sys_operation;
 
+// Current operation as set by command_issue and read by command_execute
 static sys_operation curr_op;
 
-static uint32_t read_port_ident(port_t port, bool reset);
-
+// Used by multiple state machine-type procedures
 typedef enum _cmd_state {
 	CMD_START,
 	CMD_MID,
