@@ -53,6 +53,10 @@ error_t firmware_load(maddr_t loc, const char *filename)
 	}
 
 	mem_write_mem(loc, fw_buf, read);
+
+	free(fw_buf);
+	fclose(fw_file);
+
 	return ERR_NOERR;
 }
 
