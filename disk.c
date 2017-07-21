@@ -209,6 +209,13 @@ static uint32_t data_read(port_id num)
 		return 0;
 	}
 
+	// This needs special-casing because read_operation
+	// Doesn't know the disk number
+	if (curr_op[curr].act == DA_NUM) {
+		curr_op[curr].res = DS_OK;
+		return curr;
+	}
+
 	return read_operation(&disks[curr], &curr_op[curr]);
 }
 
