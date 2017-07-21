@@ -44,7 +44,7 @@ typedef struct _port_entry {
  * ERR_NOERR: The handler was successfully added to a port.
  * ERR_PCOND: No available port exists to bind (all are in use).
  */
-extern error_t port_insert(port_entry *cfg, port_id *num);
+extern error_t port_install(port_entry *cfg, port_id *num);
 
 /**
  * Removes a handler set from a port, and marks it for reuse.

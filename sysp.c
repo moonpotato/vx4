@@ -87,7 +87,7 @@ static uint32_t read_port_ident(port_id port, bool reset);
 
 error_t install_system_handler()
 {
-	return port_insert(&system_port, &assigned_port);
+	return port_install(&system_port, &assigned_port);
 }
 
 error_t remove_system_handler()

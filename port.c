@@ -63,7 +63,7 @@ static void mark_unused(port_id num);
 // Interface functions
 /////////////////////////////////////////////////////////////////////////
 
-error_t port_insert(port_entry *cfg, port_id *num)
+error_t port_install(port_entry *cfg, port_id *num)
 {
 	*num = next_unused();
 

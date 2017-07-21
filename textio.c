@@ -39,7 +39,7 @@ static port_id assigned_port;
 
 error_t install_textio_handler()
 {
-	return port_insert(&text_port, &assigned_port);
+	return port_install(&text_port, &assigned_port);
 }
 
 error_t remove_textio_handler()
