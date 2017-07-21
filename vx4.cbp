@@ -34,6 +34,10 @@
 			<Add option="-Wall" />
 			<Add option="-std=gnu11" />
 		</Compiler>
+		<Unit filename="disk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="disk.h" />
 		<Unit filename="error.c">
 			<Option compilerVar="CC" />
 		</Unit>
