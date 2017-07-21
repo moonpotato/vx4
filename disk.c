@@ -110,7 +110,7 @@ error_t disk_remove(disk_id num)
 
 	// If the unbinding failed, the disk may not be able to be reused
 	// So we don't attempt to reuse it
-	if (stat == ERR_NOERR) {
+	if (stat == ERR_NOERR || stat == ERR_FILE) {
 		mark_unused(num);
 	}
 
@@ -188,20 +188,32 @@ static error_t unbind_disk(disk_id num, error_t partial)
         return ERR_PCOND;
 	}
 
+	error_t stat = ERR_NOERR;
+
+	if (partial == ERR_NOERR) {
+        // If the file was opened correctly (and potentially used)
+        // Then we need to write out its contents
+        if (fseek(curr->file, curr->off, SEEK_SET) != 0) {
+			return ERR_FILE;
+		}
+
+		fwrite(curr->buffer, 1, MEM_BLK_SIZE, curr->file);
+	}
+
 	curr->name = NULL;
 	curr->active = false;
 	curr->off = 0;
 	curr->fsize = 0;
 
 	if (partial == ERR_FILE) {
-		return ERR_NOERR;
+		return stat;
 	}
 
 	fclose(curr->file);
 	curr->file = NULL;
 
 	if (partial == ERR_NOMEM || partial == ERR_EXTERN) {
-		return ERR_NOERR;
+		return stat;
 	}
 
 	mem_unmap_device(DISK_MMAP_ADDR(num));
@@ -210,7 +222,7 @@ static error_t unbind_disk(disk_id num, error_t partial)
     curr->buffer = NULL;
 
     if (partial == ERR_PORT) {
-		return ERR_NOERR;
+		return stat;
     }
 
 	port_remove(curr->cmd_port);
@@ -218,7 +230,7 @@ static error_t unbind_disk(disk_id num, error_t partial)
 	port_remove(curr->data_port);
 	curr->data_port = 0;
 
-	return ERR_NOERR;
+	return stat;
 }
 
 // Used to hold state for the following two functions
