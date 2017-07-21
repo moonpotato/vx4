@@ -144,7 +144,7 @@ error_t sync_disk(disk_id num)
 	return ERR_NOERR;
 }
 
-static error_t bind_disk(disk_id num, const char *filename)
+error_t bind_disk(disk_id num, const char *filename)
 {
 	if (!IS_VALID_DISK(num)) {
 		return ERR_INVAL;
@@ -199,7 +199,7 @@ static error_t bind_disk(disk_id num, const char *filename)
 	return ERR_NOERR;
 }
 
-static error_t unbind_disk(disk_id num, error_t partial)
+error_t unbind_disk(disk_id num, error_t partial)
 {
 	if (!IS_VALID_DISK(num)) {
 		return ERR_INVAL;
@@ -339,7 +339,7 @@ void data_write(port_id num, uint32_t data)
 	write_operation(&disks[curr], &curr_op[curr]);
 }
 
-static uint32_t data_read(port_id num)
+uint32_t data_read(port_id num)
 {
 	disk_id curr = identify_disk(num);
 
@@ -358,7 +358,7 @@ static uint32_t data_read(port_id num)
 	return read_operation(&disks[curr], &curr_op[curr]);
 }
 
-static void write_operation(disk_info_entry *disk, disk_operation *action)
+void write_operation(disk_info_entry *disk, disk_operation *action)
 {
 	if (!disk->active) {
 		action->res = DS_ERROR;
@@ -372,7 +372,7 @@ static void write_operation(disk_info_entry *disk, disk_operation *action)
 	}
 }
 
-static uint32_t read_operation(disk_info_entry *disk, disk_operation *action)
+uint32_t read_operation(disk_info_entry *disk, disk_operation *action)
 {
 	if (!disk->active) {
 		action->res = DS_ERROR;
