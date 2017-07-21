@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 /////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
@@ -283,6 +284,21 @@ error_t mem_unmap_device(maddr_t base)
 
 	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
 	return remove_device_block(blk);
+}
+
+mblock_t *mem_raw_block(maddr_t base, bool create)
+{
+	if (!IS_BLOCK_ALIGNED(base)) {
+		return NULL;
+	}
+
+	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
+
+	if (create) {
+		create_system_block(blk);
+	}
+
+	return blk->base;
 }
 
 void mem_dump()

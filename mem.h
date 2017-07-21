@@ -3,6 +3,7 @@
 #include "error.h"
 
 #include <stdint.h>
+#include <stdbool.h>
 
 /////////////////////////////////////////////////////////////////////////
 // Type declarations
@@ -47,5 +48,6 @@ extern error_t mem_set_words(maddr_t base, uint32_t val, msize_t num);
 extern error_t mem_map_device(maddr_t base, mblock_t *mem);
 extern error_t mem_unmap_device(maddr_t base);
 
+extern mblock_t *mem_raw_block(maddr_t base, bool create);
 extern void mem_dump();
 
