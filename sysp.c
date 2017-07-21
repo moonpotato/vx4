@@ -124,9 +124,8 @@ uint32_t read_port_ident(port_t port, bool reset)
 		return 0;
 	}
 
-	char out;
-
 	switch (state) {
+		default:
 		case CMD_START:
 			ident = port_get_ident(port);
 			state = CMD_MID;
@@ -134,20 +133,19 @@ uint32_t read_port_ident(port_t port, bool reset)
 
 		case CMD_MID:
 			if (ident == NULL) {
-				out = 0;
+				return 0;
 			}
 			else {
-				out = ident[pos++];
+				char out = ident[pos++];
+
+				if (out == 0) {
+					state = CMD_DONE;
+				}
+
+				return out;
 			}
-			break;
 
 		case CMD_DONE:
 			return 0;
 	}
-
-	if (out == 0) {
-		state = CMD_DONE;
-	}
-
-	return out;
 }
