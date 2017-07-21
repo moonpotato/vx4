@@ -117,6 +117,7 @@ void command_issue(uint32_t command_part)
 			// We might actually _want_ a zero as our data
 			// But if we've issued a one-word command, this means
 			// We need to write _two_ zeros to correctly reset
+			curr_op.data = command_part;
 			state = CMD_DONE;
 			break;
 
