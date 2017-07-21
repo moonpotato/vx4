@@ -359,7 +359,7 @@ void mem_dump()
 	for (mem_size i = 0; i < MEM_NUM_BLKS; ++i) {
 		if (memory[i].base != NULL) {
 			char fname[12];
-			snprintf(fname, 12, "%04u.dump", i * MEM_BLK_SIZE);
+			snprintf(fname, 12, "%04u.dump", i);
 
 			FILE *dump = fopen(fname, "wb");
 			fwrite(memory[i].base, 1, MEM_BLK_SIZE, dump);
