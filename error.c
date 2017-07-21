@@ -55,7 +55,7 @@ noreturn void error_exit(error_t err_code, const char *file, unsigned line, cons
 	#endif
 
 	if (info != NULL) {
-		fprintf(stderr, "Note: %s.\n", info);
+		fprintf(stderr, "%s.\n", info);
 	}
 
 	_Exit(err_code);
