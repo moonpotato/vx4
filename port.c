@@ -75,7 +75,7 @@ error_t port_remove(port_id num)
 	error_t stat = unbind_port(num);
 
 	// If the unbinding failed, the port may not be valid
-	// so don't attempt to reuse it.
+	// So don't attempt to reuse it.
 	if (stat == ERR_NOERR) {
 		mark_unused(num);
 	}
