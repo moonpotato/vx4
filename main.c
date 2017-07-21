@@ -32,7 +32,9 @@ int main(int argc, char *argv[])
 	// Each argument passed on the command line becomes a loaded disk.
 	load_disks(argc - 1, &argv[1]);
 
-	mem_dump();
+	// Test writing to the disk mmap
+	// The main control logic will be called here
+	mem_write_word(0xF0000000, 'feeb');
 
 	// Clean up now, in reverse order
 	unload_disks();
