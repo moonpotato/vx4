@@ -33,6 +33,10 @@ noreturn void error_exit(error_t err_code, const char *file, unsigned line, cons
 			msg = "A request could not be fulfilled at the required time";
 			break;
 
+		case ERR_EXTERN:
+			msg = "An error occurred in an external function";
+			break;
+
 		default:
 			msg = "An unspecified error occurred";
 			break;
