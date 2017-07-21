@@ -22,7 +22,7 @@
  * IN num: The port that caused the function to be called. Ignored.
  * IN command_part: The word to be added to the command.
  */
-static void command_issue(port_t num, uint32_t command_part);
+static void command_issue(port_id num, uint32_t command_part);
 
 /**
  * Executes the command configured by command_issue.
@@ -36,7 +36,7 @@ static void command_issue(port_t num, uint32_t command_part);
  *
  * Returns: The value produced by this step of the command.
  */
-static uint32_t command_execute(port_t num);
+static uint32_t command_execute(port_id num);
 
 /**
  * Resets all command procedures. Called in the operation of
@@ -51,7 +51,7 @@ static port_entry system_port = {
 };
 
 // We need a place to store the port number we are assigned
-static port_t assigned_port;
+static port_id assigned_port;
 
 typedef struct _sys_operation {
 	sys_action act;
@@ -79,7 +79,7 @@ typedef enum _cmd_state {
  * Returns: 0 if reset == true, otherwise the next byte in the ident
  * string of the port specified on the first non-resetting call.
  */
-static uint32_t read_port_ident(port_t port, bool reset);
+static uint32_t read_port_ident(port_id port, bool reset);
 
 /////////////////////////////////////////////////////////////////////////
 // Interface functions
@@ -99,7 +99,7 @@ error_t remove_system_handler()
 // Module internal functions
 /////////////////////////////////////////////////////////////////////////
 
-void command_issue(port_t num, uint32_t command_part)
+void command_issue(port_id num, uint32_t command_part)
 {
 	(void)num;
 
@@ -135,7 +135,7 @@ void command_issue(port_t num, uint32_t command_part)
 	}
 }
 
-uint32_t command_execute(port_t num)
+uint32_t command_execute(port_id num)
 {
 	(void)num;
 
@@ -157,7 +157,7 @@ void command_clear()
 	read_port_ident(0, true);
 }
 
-uint32_t read_port_ident(port_t port, bool reset)
+uint32_t read_port_ident(port_id port, bool reset)
 {
 	static cmd_state state = CMD_START;
 

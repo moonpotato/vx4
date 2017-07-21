@@ -11,7 +11,7 @@
 // Interface functions
 /////////////////////////////////////////////////////////////////////////
 
-error_t firmware_load(maddr_t loc, const char *filename)
+error_t firmware_load(mem_addr loc, const char *filename)
 {
 	FILE *fw_file = fopen(filename, "rb");
 	if (fw_file == NULL) {

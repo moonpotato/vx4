@@ -35,7 +35,7 @@ static port_entry *ports[PORT_NUM_PORTS];
  * ERR_INVAL: The port specified was out of range (can never exist).
  * ERR_PCOND: The port specified was already in use.
  */
-static error_t bind_port(port_t num, port_entry *cfg);
+static error_t bind_port(port_id num, port_entry *cfg);
 
 /**
  * Unregisters a handler on a specific port.
@@ -47,30 +47,30 @@ static error_t bind_port(port_t num, port_entry *cfg);
  * ERR_INVAL: The port specified was out of range (can never exist).
  * ERR_PCOND: The port specified is currently unbound.
  */
-static error_t unbind_port(port_t num);
+static error_t unbind_port(port_id num);
 
 /**
  * Returns the lowest-numbered port unused (ready to be allocated).
  */
-static port_t next_unused();
+static port_id next_unused();
 
 /**
  * Marks a port as available for reuse.
  */
-static void mark_unused(port_t num);
+static void mark_unused(port_id num);
 
 /////////////////////////////////////////////////////////////////////////
 // Interface functions
 /////////////////////////////////////////////////////////////////////////
 
-error_t port_insert(port_entry *cfg, port_t *num)
+error_t port_insert(port_entry *cfg, port_id *num)
 {
 	*num = next_unused();
 
 	return bind_port(*num, cfg);
 }
 
-error_t port_remove(port_t num)
+error_t port_remove(port_id num)
 {
 	error_t stat = unbind_port(num);
 
@@ -83,7 +83,7 @@ error_t port_remove(port_t num)
 	return stat;
 }
 
-error_t port_write(port_t num, uint32_t data)
+error_t port_write(port_id num, uint32_t data)
 {
 	if (!IS_VALID_PORT(num)) {
 		return ERR_INVAL;
@@ -104,7 +104,7 @@ error_t port_write(port_t num, uint32_t data)
 	return ERR_NOERR;
 }
 
-error_t port_read(port_t num, uint32_t *data)
+error_t port_read(port_id num, uint32_t *data)
 {
 	if (!IS_VALID_PORT(num)) {
 		return ERR_INVAL;
@@ -127,7 +127,7 @@ error_t port_read(port_t num, uint32_t *data)
 	return ERR_NOERR;
 }
 
-const char *port_get_ident(port_t num)
+const char *port_get_ident(port_id num)
 {
 	if (!IS_VALID_PORT(num)) {
 		return NULL;
@@ -146,7 +146,7 @@ const char *port_get_ident(port_t num)
 // Module internal functions
 /////////////////////////////////////////////////////////////////////////
 
-error_t bind_port(port_t num, port_entry *cfg)
+error_t bind_port(port_id num, port_entry *cfg)
 {
 	if (!IS_VALID_PORT(num)) {
 		return ERR_INVAL;
@@ -160,7 +160,7 @@ error_t bind_port(port_t num, port_entry *cfg)
 	return ERR_NOERR;
 }
 
-error_t unbind_port(port_t num)
+error_t unbind_port(port_id num)
 {
 	if (!IS_VALID_PORT(num)) {
 		return ERR_INVAL;
@@ -175,15 +175,15 @@ error_t unbind_port(port_t num)
 }
 
 // Used to hold state for the following two functions
-static port_t next_alloc;
+static port_id next_alloc;
 
-port_t next_unused()
+port_id next_unused()
 {
 	// First check the next_alloc variable
 	// If it's good, we're good
 	// Otherwise we have to go hunting
 	if (ports[next_alloc] != NULL) {
-		for (port_t i = 0; IS_VALID_PORT(i); ++i) {
+		for (port_id i = 0; IS_VALID_PORT(i); ++i) {
 			if (ports[i] == NULL) {
 				next_alloc = i;
 				break;
@@ -191,7 +191,7 @@ port_t next_unused()
 		}
 	}
 
-	port_t to_ret = next_alloc;
+	port_id to_ret = next_alloc;
 
 	if (!IS_VALID_PORT(++next_alloc)) {
 		next_alloc = 0;
@@ -200,7 +200,7 @@ port_t next_unused()
 	return to_ret;
 }
 
-void mark_unused(port_t num)
+void mark_unused(port_id num)
 {
 	// We want to prefer low-numbered ports
 	if (num < next_alloc) {

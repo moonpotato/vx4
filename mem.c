@@ -31,7 +31,7 @@ typedef struct _mem_blk_entry {
 		MAP_DEVICE,
 	} type;
 
-	mblock_t *base; // Pointer to the beginning of a MEM_BLK_SIZE array
+	mem_block *base; // Pointer to the beginning of a MEM_BLK_SIZE array
 } mem_blk_entry;
 
 // Every entry is prefilled to MAP_NONE (unloaded).
@@ -75,7 +75,7 @@ static error_t delete_system_block(mem_blk_entry *block);
  * ERR_NOERR: The block was successfully mapped.
  * ERR_PCOND: The block wasn't empty (MAP_NONE).
  */
-static error_t install_device_block(mem_blk_entry *block, mblock_t *mem);
+static error_t install_device_block(mem_blk_entry *block, mem_block *mem);
 
 /**
  * Deletes a block of memory previously allocated as virtual device
@@ -95,10 +95,10 @@ static error_t remove_device_block(mem_blk_entry *block);
 // Interface functions
 /////////////////////////////////////////////////////////////////////////
 
-error_t mem_read_byte(maddr_t base, uint8_t *dest)
+error_t mem_read_byte(mem_addr base, uint8_t *dest)
 {
 	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
-	maddr_t off = MEM_BLOCK_MASK(base);
+	mem_addr off = MEM_BLOCK_MASK(base);
 
 	create_system_block(blk);
 
@@ -107,14 +107,14 @@ error_t mem_read_byte(maddr_t base, uint8_t *dest)
 	return ERR_NOERR;
 }
 
-error_t mem_read_dbyte(maddr_t base, uint16_t *dest)
+error_t mem_read_dbyte(mem_addr base, uint16_t *dest)
 {
 	if (!IS_DBYTE_ALIGNED(base)) {
 		return ERR_INVAL;
 	}
 
 	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
-	maddr_t off = MEM_BLOCK_MASK(base);
+	mem_addr off = MEM_BLOCK_MASK(base);
 
 	create_system_block(blk);
 
@@ -123,14 +123,14 @@ error_t mem_read_dbyte(maddr_t base, uint16_t *dest)
 	return ERR_NOERR;
 }
 
-error_t mem_read_word(maddr_t base, uint32_t *dest)
+error_t mem_read_word(mem_addr base, uint32_t *dest)
 {
 	if (!IS_WORD_ALIGNED(base)) {
 		return ERR_INVAL;
 	}
 
 	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
-	maddr_t off = MEM_BLOCK_MASK(base);
+	mem_addr off = MEM_BLOCK_MASK(base);
 
 	create_system_block(blk);
 
@@ -139,10 +139,10 @@ error_t mem_read_word(maddr_t base, uint32_t *dest)
 	return ERR_NOERR;
 }
 
-error_t mem_write_byte(maddr_t base, uint8_t val)
+error_t mem_write_byte(mem_addr base, uint8_t val)
 {
 	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
-	maddr_t off = MEM_BLOCK_MASK(base);
+	mem_addr off = MEM_BLOCK_MASK(base);
 
 	create_system_block(blk);
 
@@ -151,14 +151,14 @@ error_t mem_write_byte(maddr_t base, uint8_t val)
 	return ERR_NOERR;
 }
 
-error_t mem_write_dbyte(maddr_t base, uint16_t val)
+error_t mem_write_dbyte(mem_addr base, uint16_t val)
 {
 	if (!IS_DBYTE_ALIGNED(base)) {
 		return ERR_INVAL;
 	}
 
 	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
-	maddr_t off = MEM_BLOCK_MASK(base);
+	mem_addr off = MEM_BLOCK_MASK(base);
 
 	create_system_block(blk);
 
@@ -167,14 +167,14 @@ error_t mem_write_dbyte(maddr_t base, uint16_t val)
 	return ERR_NOERR;
 }
 
-error_t mem_write_word(maddr_t base, uint32_t val)
+error_t mem_write_word(mem_addr base, uint32_t val)
 {
 	if (!IS_WORD_ALIGNED(base)) {
 		return ERR_INVAL;
 	}
 
 	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
-	maddr_t off = MEM_BLOCK_MASK(base);
+	mem_addr off = MEM_BLOCK_MASK(base);
 
 	create_system_block(blk);
 
@@ -183,10 +183,10 @@ error_t mem_write_word(maddr_t base, uint32_t val)
 	return ERR_NOERR;
 }
 
-uint32_t mem_read_string(maddr_t base, char *dest, msize_t max)
+uint32_t mem_read_string(mem_addr base, char *dest, mem_size max)
 {
 	uint8_t *udest = (uint8_t *)dest;
-	msize_t read = 0;
+	mem_size read = 0;
 
 	while (read < (max - 1)) {
 		error_t stat = mem_read_byte(base, udest);
@@ -206,10 +206,10 @@ uint32_t mem_read_string(maddr_t base, char *dest, msize_t max)
 	return read;
 }
 
-uint32_t mem_read_mem(maddr_t base, void *dest, msize_t num)
+uint32_t mem_read_mem(mem_addr base, void *dest, mem_size num)
 {
 	uint8_t *udest = (uint8_t *)dest;
-	msize_t read = 0;
+	mem_size read = 0;
 
 	while (read < num) {
 		error_t stat = mem_read_byte(base, udest);
@@ -224,10 +224,10 @@ uint32_t mem_read_mem(maddr_t base, void *dest, msize_t num)
 	return read;
 }
 
-uint32_t mem_write_string(maddr_t base, const char *src)
+uint32_t mem_write_string(mem_addr base, const char *src)
 {
 	const uint8_t *usrc = (uint8_t *)src;
-	msize_t written = 0;
+	mem_size written = 0;
 
 	do {
 		error_t stat = mem_write_byte(base, *usrc);
@@ -242,10 +242,10 @@ uint32_t mem_write_string(maddr_t base, const char *src)
 	return written;
 }
 
-uint32_t mem_write_mem(maddr_t base, const void *src, msize_t num)
+uint32_t mem_write_mem(mem_addr base, const void *src, mem_size num)
 {
 	const uint8_t *usrc = (uint8_t *)src;
-	msize_t written = 0;
+	mem_size written = 0;
 
 	while (written < num) {
 		error_t stat = mem_write_byte(base, *usrc);
@@ -260,9 +260,9 @@ uint32_t mem_write_mem(maddr_t base, const void *src, msize_t num)
 	return written;
 }
 
-error_t mem_set_bytes(maddr_t base, uint8_t val, msize_t num)
+error_t mem_set_bytes(mem_addr base, uint8_t val, mem_size num)
 {
-	msize_t written = 0;
+	mem_size written = 0;
 
 	while (written < num) {
 		error_t stat = mem_write_byte(base, val);
@@ -277,9 +277,9 @@ error_t mem_set_bytes(maddr_t base, uint8_t val, msize_t num)
 	return ERR_NOERR;
 }
 
-error_t mem_set_dbytes(maddr_t base, uint16_t val, msize_t num)
+error_t mem_set_dbytes(mem_addr base, uint16_t val, mem_size num)
 {
-	msize_t written = 0;
+	mem_size written = 0;
 
 	while (written < num) {
 		error_t stat = mem_write_dbyte(base, val);
@@ -296,9 +296,9 @@ error_t mem_set_dbytes(maddr_t base, uint16_t val, msize_t num)
 }
 
 
-error_t mem_set_words(maddr_t base, uint32_t val, msize_t num)
+error_t mem_set_words(mem_addr base, uint32_t val, mem_size num)
 {
-	msize_t written = 0;
+	mem_size written = 0;
 
 	while (written < num) {
 		error_t stat = mem_write_word(base, val);
@@ -314,7 +314,7 @@ error_t mem_set_words(maddr_t base, uint32_t val, msize_t num)
 	return ERR_NOERR;
 }
 
-error_t mem_map_device(maddr_t base, mblock_t *mem)
+error_t mem_map_device(mem_addr base, mem_block *mem)
 {
 	if (!IS_BLOCK_ALIGNED(base)) {
 		return ERR_INVAL;
@@ -329,7 +329,7 @@ error_t mem_map_device(maddr_t base, mblock_t *mem)
 	return install_device_block(blk, mem);
 }
 
-error_t mem_unmap_device(maddr_t base)
+error_t mem_unmap_device(mem_addr base)
 {
 	if (!IS_BLOCK_ALIGNED(base)) {
 		return ERR_INVAL;
@@ -339,7 +339,7 @@ error_t mem_unmap_device(maddr_t base)
 	return remove_device_block(blk);
 }
 
-mblock_t *mem_raw_block(maddr_t base, bool create)
+mem_block *mem_raw_block(mem_addr base, bool create)
 {
 	if (!IS_BLOCK_ALIGNED(base)) {
 		return NULL;
@@ -356,7 +356,7 @@ mblock_t *mem_raw_block(maddr_t base, bool create)
 
 void mem_dump()
 {
-	for (msize_t i = 0; i < MEM_NUM_BLKS; ++i) {
+	for (mem_size i = 0; i < MEM_NUM_BLKS; ++i) {
 		if (memory[i].base != NULL) {
 			char fname[12];
 			snprintf(fname, 12, "%04u.dump", i * MEM_BLK_SIZE);
@@ -401,7 +401,7 @@ error_t delete_system_block(mem_blk_entry *block)
 	return ERR_NOERR;
 }
 
-error_t install_device_block(mem_blk_entry *block, mblock_t *mem)
+error_t install_device_block(mem_blk_entry *block, mem_block *mem)
 {
 	if (block->type != MAP_NONE) {
 		return ERR_PCOND;

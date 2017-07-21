@@ -9,9 +9,9 @@
 // Type declarations
 /////////////////////////////////////////////////////////////////////////
 
-typedef uint32_t maddr_t; // A virtual CPU memory address
-typedef uint32_t msize_t; // Size type for virtual CPU memory
-typedef uint8_t mblock_t; // Byte type to allow byte-wise memory access
+typedef uint32_t mem_addr; // A virtual CPU memory address
+typedef uint32_t mem_size; // Size type for virtual CPU memory
+typedef uint8_t mem_block; // Byte type to allow byte-wise memory access
 
 /////////////////////////////////////////////////////////////////////////
 // Constants + helper macros
@@ -41,9 +41,9 @@ typedef uint8_t mblock_t; // Byte type to allow byte-wise memory access
  * ERR_INVAL: The provided address was not correctly aligned for the
  * requested size of data.
  */
-extern error_t mem_read_byte(maddr_t base, uint8_t *dest);
-extern error_t mem_read_dbyte(maddr_t base, uint16_t *dest);
-extern error_t mem_read_word(maddr_t base, uint32_t *dest);
+extern error_t mem_read_byte(mem_addr base, uint8_t *dest);
+extern error_t mem_read_dbyte(mem_addr base, uint16_t *dest);
+extern error_t mem_read_word(mem_addr base, uint32_t *dest);
 
 /**
  * Writes data to a size-aligned location in memory.
@@ -56,9 +56,9 @@ extern error_t mem_read_word(maddr_t base, uint32_t *dest);
  * ERR_INVAL: The provided address was not correctly aligned for the
  * size of data provided.
  */
-extern error_t mem_write_byte(maddr_t base, uint8_t val);
-extern error_t mem_write_dbyte(maddr_t base, uint16_t val);
-extern error_t mem_write_word(maddr_t base, uint32_t val);
+extern error_t mem_write_byte(mem_addr base, uint8_t val);
+extern error_t mem_write_dbyte(mem_addr base, uint16_t val);
+extern error_t mem_write_word(mem_addr base, uint32_t val);
 
 /**
  * Copies a null-terminated string from memory to a buffer. If the
@@ -71,7 +71,7 @@ extern error_t mem_write_word(maddr_t base, uint32_t val);
  *
  * Returns: The number of bytes read.
  */
-extern uint32_t mem_read_string(maddr_t base, char *dest, msize_t max);
+extern uint32_t mem_read_string(mem_addr base, char *dest, mem_size max);
 
 /**
  * Reads from a set span of memory into a buffer.
@@ -82,7 +82,7 @@ extern uint32_t mem_read_string(maddr_t base, char *dest, msize_t max);
  *
  * Returns: The number of bytes read. A value != num indicates error.
  */
-extern uint32_t mem_read_mem(maddr_t base, void *dest, msize_t num);
+extern uint32_t mem_read_mem(mem_addr base, void *dest, mem_size num);
 
 /**
  * Writes a null-terminated string into memory, including the
@@ -93,7 +93,7 @@ extern uint32_t mem_read_mem(maddr_t base, void *dest, msize_t num);
  *
  * Returns: The number of bytes written.
  */
-extern uint32_t mem_write_string(maddr_t base, const char *src);
+extern uint32_t mem_write_string(mem_addr base, const char *src);
 
 /**
  * Writes from a given buffer into memory at a specific location.
@@ -104,7 +104,7 @@ extern uint32_t mem_write_string(maddr_t base, const char *src);
  *
  * Returns: The number of bytes written. A value != num indicates error.
  */
-extern uint32_t mem_write_mem(maddr_t base, const void *src, msize_t num);
+extern uint32_t mem_write_mem(mem_addr base, const void *src, mem_size num);
 
 /**
  * Fills a size-aligned block of memory with a given value.
@@ -120,9 +120,9 @@ extern uint32_t mem_write_mem(maddr_t base, const void *src, msize_t num);
  * ERR_INVAL: The provided address was not correctly aligned for the
  * requested size.
  */
-extern error_t mem_set_bytes(maddr_t base, uint8_t val, msize_t num);
-extern error_t mem_set_dbytes(maddr_t base, uint16_t val, msize_t num);
-extern error_t mem_set_words(maddr_t base, uint32_t val, msize_t num);
+extern error_t mem_set_bytes(mem_addr base, uint8_t val, mem_size num);
+extern error_t mem_set_dbytes(mem_addr base, uint16_t val, mem_size num);
+extern error_t mem_set_words(mem_addr base, uint32_t val, mem_size num);
 
 /**
  * Maps a custom block of memory into the virtual address space.
@@ -137,7 +137,7 @@ extern error_t mem_set_words(maddr_t base, uint32_t val, msize_t num);
  * ERR_INVAL: The address specified was not a block boundary.
  * ERR_PCOND: The address specified refers to a block that is already mapped.
  */
-extern error_t mem_map_device(maddr_t base, mblock_t *mem);
+extern error_t mem_map_device(mem_addr base, mem_block *mem);
 
 /**
  * Unmaps a custom memory mapping from the virtual address space, returning
@@ -150,7 +150,7 @@ extern error_t mem_map_device(maddr_t base, mblock_t *mem);
  * ERR_INVAL: The address specified was not a block boundary.
  * ERR_PCOND: The address specified is not currently part of a mapping.
  */
-extern error_t mem_unmap_device(maddr_t base);
+extern error_t mem_unmap_device(mem_addr base);
 
 /**
  * Retrieves the memory currently being used to hold a given block.
@@ -162,7 +162,7 @@ extern error_t mem_unmap_device(maddr_t base);
  * - The base address given refers to no block (is not block aligned).
  * - The block is unloaded and mem_raw_block was called with create = false.
  */
-extern mblock_t *mem_raw_block(maddr_t base, bool create);
+extern mem_block *mem_raw_block(mem_addr base, bool create);
 
 /**
  * Cause all loaded blocks to be written to files. Each block is written

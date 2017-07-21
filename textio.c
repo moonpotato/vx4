@@ -14,7 +14,7 @@
  *
  * IN c: The unsigned char to write, promoted to 32 bits.
  */
-static void console_write(port_t num, uint32_t c);
+static void console_write(port_id num, uint32_t c);
 
 /**
  * Reads a character from the console
@@ -22,7 +22,7 @@ static void console_write(port_t num, uint32_t c);
  * Returns: The unsigned char read, promoted to 32 bits,
  * or 0 on error.
  */
-static uint32_t console_read(port_t num);
+static uint32_t console_read(port_id num);
 
 static port_entry text_port = {
 	"Generic serial I/O",
@@ -31,7 +31,7 @@ static port_entry text_port = {
 };
 
 // We need a place to store the port number we are assigned
-static port_t assigned_port;
+static port_id assigned_port;
 
 /////////////////////////////////////////////////////////////////////////
 // Interface functions
@@ -51,14 +51,14 @@ error_t remove_textio_handler()
 // Module internal functions
 /////////////////////////////////////////////////////////////////////////
 
-static void console_write(port_t num, uint32_t c)
+static void console_write(port_id num, uint32_t c)
 {
 	(void)num;
 
 	putchar((unsigned char)c);
 }
 
-static uint32_t console_read(port_t num)
+static uint32_t console_read(port_id num)
 {
 	(void)num;
 
