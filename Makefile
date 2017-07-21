@@ -3,7 +3,7 @@ CFLAGS = -std=gnu11 -Wall -g
 
 LIBS = -ldl
 
-EXEC = run
+EXEC = run.out
 HEADERS = $(*.h)
 SOURCES = $(wildcard *.c)
 OBJECTS = $(SOURCES:.c=.o)
