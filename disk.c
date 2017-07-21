@@ -43,6 +43,8 @@ static disk_info_entry disks[DISK_MAX_DISKS];
 
 static error_t sync_disk(disk_id num);
 
+static error_t seek_disk(disk_id num, disk_addr new_off, bool sync_first);
+
 static error_t bind_disk(disk_id num, const char *filename);
 
 static error_t unbind_disk(disk_id num, error_t partial);
@@ -131,7 +133,7 @@ error_t sync_disk(disk_id num)
 
 	disk_info_entry *curr = &disks[num];
 
-	if (curr->active) {
+	if (!curr->active) {
         return ERR_PCOND;
 	}
 
@@ -141,6 +143,38 @@ error_t sync_disk(disk_id num)
 
 	fwrite(curr->buffer, 1, MEM_BLK_SIZE, curr->file);
 
+	return ERR_NOERR;
+}
+
+error_t seek_disk(disk_id num, disk_addr new_off, bool sync_first)
+{
+	if (!IS_VALID_DISK(num)) {
+		return ERR_INVAL;
+	}
+
+	disk_info_entry *curr = &disks[num];
+
+	if ((curr->fsize - new_off) < MEM_BLK_SIZE) {
+		// We still need space for a full block
+		return ERR_INVAL;
+	}
+
+	if (!curr->active) {
+        return ERR_PCOND;
+	}
+
+	if (sync_first) {
+		if (sync_disk(num) != ERR_NOERR) {
+			return ERR_FILE;
+		}
+	}
+
+	if (fseek(curr->file, new_off, SEEK_SET) != 0) {
+		return ERR_FILE;
+	}
+	curr->off = new_off;
+
+	fread(curr->buffer, 1, MEM_BLK_SIZE, curr->file);
 	return ERR_NOERR;
 }
 
@@ -158,7 +192,6 @@ error_t bind_disk(disk_id num, const char *filename)
 
 	curr->name = filename;
 	curr->active = true;
-	curr->off = 0;
 
 	curr->file = fopen(filename, "r+b");
 	if (curr->file == NULL) {
@@ -179,8 +212,7 @@ error_t bind_disk(disk_id num, const char *filename)
 		return ERR_NOMEM;
 	}
 
-	rewind(curr->file);
-	fread(curr->buffer, 1, MEM_BLK_SIZE, curr->file);
+	seek_disk(num, 0, false);
 
 	mem_map_device(DISK_MMAP_ADDR(num), curr->buffer);
 
