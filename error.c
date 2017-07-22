@@ -1,5 +1,7 @@
 #include "error.h"
 
+#include "graphics.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -61,6 +63,7 @@ noreturn void error_exit(error_t err_code, const char *file, unsigned line, cons
 		fprintf(stderr, "%s.\n", info);
 	}
 
+	graphics_end(); // Called to avoid leaking graphics resources
 	exit(err_code);
 }
 

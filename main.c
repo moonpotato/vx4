@@ -7,6 +7,10 @@
 #include "sysp.h"
 #include "fwload.h"
 #include "disk.h"
+#include "graphics.h"
+
+// Needed for any program that runs with SDL2
+#include <SDL2/SDL_main.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,14 +33,19 @@ int main(int argc, char *argv[])
 	DIE_ON(install_system_handler());
 	DIE_ON(install_textio_handler());
 
-	// Each argument passed on the command line becomes a loaded disk.
+	// Each argument passed on the command line becomes a loaded disk
 	load_disks(argc - 1, &argv[1]);
 
-	// Test writing to the disk mmap
-	// The main control logic will be called here
-	mem_write_word(0xF0000000, 'feeb');
+	// At the moment, use a fixed-size render window
+	if (graphics_begin(640, 480) != ERR_NOERR) {
+		fprintf(stderr, "Falling back to no graphics mode...\n");
+	}
+
+	// TODO //
 
 	// Clean up now, in reverse order
+	graphics_end();
+
 	unload_disks();
 
 	remove_textio_handler();
