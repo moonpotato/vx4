@@ -17,8 +17,7 @@
 #define IS_VALID_DISK(disk) ((disk) < DISK_MAX_DISKS)
 #define IS_VALID_SIZE(size) (MEM_BLOCK_MASK(size) == 0)
 
-#define BEGIN_MMAP_ADDR (MEM_BLK_SIZE * (MEM_NUM_BLKS - DISK_MAX_DISKS))
-#define DISK_MMAP_ADDR(disk) (BEGIN_MMAP_ADDR + (disk * MEM_BLK_SIZE))
+#define DISK_MMAP_ADDR(disk) (DISK_MMAP_START + (disk * MEM_BLK_SIZE))
 
 ////////////////////////////////////////////////////////////////////////////////
 // Module internal declarations

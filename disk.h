@@ -20,6 +20,9 @@ typedef uint8_t disk_block; // Compatible with mem_block
 
 #define DISK_MAX_DISKS 256 // Chosen arbitrarily
 
+// Memory from here to the end of the address space may become unavailable
+#define DISK_MMAP_START (MEM_BLK_SIZE * (MEM_NUM_BLKS - DISK_MAX_DISKS))
+
 typedef enum _disk_action {
 	DA_NONE, // No action to perform
 	DA_NUM, // Get the associated disk number
