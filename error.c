@@ -11,6 +11,11 @@
 
 noreturn void error_exit(error_t err_code, const char *file, unsigned line, const char *info)
 {
+	#ifdef NDEBUG
+	(void)file;
+	(void)line;
+	#endif // NDEBUG
+
 	#ifndef NDEBUG
 	const char *msg;
 
@@ -50,14 +55,14 @@ noreturn void error_exit(error_t err_code, const char *file, unsigned line, cons
 			msg = "An unspecified error occurred";
 			break;
 	}
-	#endif
+	#endif // NDEBUG
 
 	fprintf(stderr, "Error code %d, terminating...\n", err_code);
 
 	#ifndef NDEBUG
 	fprintf(stderr, "Note: In %s, on line %d\n", file, line);
 	fprintf(stderr, "Note: %s.\n", msg);
-	#endif
+	#endif // NDEBUG
 
 	if (info != NULL) {
 		fprintf(stderr, "%s.\n", info);
