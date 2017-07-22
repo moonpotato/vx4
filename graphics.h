@@ -33,6 +33,8 @@ typedef enum _gfx_state {
 
 extern error_t graphics_begin(int width, int height);
 
+extern error_t graphics_restart(int width, int height);
+
 extern void graphics_render();
 
 extern void graphics_end();

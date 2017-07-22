@@ -48,6 +48,8 @@ static port_entry graphics_port[] = {
 static port_id cmd_port;
 static port_id data_port;
 
+static bool gfx_init;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Interface functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +85,32 @@ error_t graphics_begin(int width, int height)
 		return ERR_PORT;
 	}
 
+	gfx_init = true;
 	return ERR_NOERR;
+}
+
+error_t graphics_restart(int width, int height)
+{
+	if (!gfx_init) {
+		return ERR_PCOND;
+	}
+
+	sdl_subsys_quit();
+
+	win_width = 0;
+	win_height = 0;
+
+	int stat = sdl_subsys_init(width, height);
+
+	if (stat == ERR_NOERR) {
+		win_width = (uint16_t)width;
+		win_height = (uint16_t)height;
+	}
+	else {
+        gfx_init = false;
+	}
+
+    return stat;
 }
 
 void graphics_render()
@@ -93,6 +120,8 @@ void graphics_render()
 
 void graphics_end()
 {
+	gfx_init = false;
+
 	if (cmd_port) {
 		port_remove(cmd_port);
 	}
@@ -197,6 +226,15 @@ void data_write(port_id num, uint32_t data)
 		case GA_NONE:
 			res = GS_ERROR;
 			break;
+
+		case GA_RES:
+            if (graphics_restart(data & 0xFFFF, data >> 16) == ERR_NOERR) {
+				res = GS_OK;
+            }
+            else {
+				res = GS_ERROR;
+            }
+            break;
 	}
 }
 
