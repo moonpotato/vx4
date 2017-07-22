@@ -128,7 +128,6 @@ flycheck_*.el
 
 # Project addtions
 *.dump
-*.bin
 
 # Valgrind and analysis tool output
 *.xml
