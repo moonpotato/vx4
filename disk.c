@@ -465,6 +465,15 @@ void data_write(port_id num, uint32_t data)
 				action->res = DS_ERROR;
 			}
 			return;
+
+		case DA_SYNC:
+			if (sync_disk(num) == ERR_NOERR) {
+				action->res = DS_OK;
+			}
+			else {
+				action->res = DS_ERROR;
+			}
+			return;
 	}
 }
 

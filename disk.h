@@ -24,6 +24,7 @@ typedef enum _disk_action {
 	DA_NONE, // No action to perform
 	DA_NUM, // Get the associated disk number
 	DA_SEEK, // Get/set the offset of the memory map in the file
+	DA_SYNC, // Cause the file buffer to be written to the backing file
 } disk_action;
 
 typedef enum _disk_state {
