@@ -4,6 +4,7 @@
 #include "disk.h" // For DISK_MMAP_START constant
 
 #include <stdint.h>
+#include <stdbool.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants + helper macros
@@ -36,5 +37,7 @@ extern error_t graphics_begin(int width, int height);
 extern error_t graphics_restart(int width, int height);
 
 extern void graphics_render();
+
+extern bool graphics_step();
 
 extern void graphics_end();

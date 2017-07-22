@@ -42,6 +42,9 @@ int main(int argc, char *argv[])
 	}
 
 	// TODO //
+	while (graphics_step()) {
+		graphics_render();
+	}
 
 	// Clean up now, in reverse order
 	graphics_end();

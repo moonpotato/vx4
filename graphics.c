@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 
 #include <stdint.h>
+#include <stdbool.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
@@ -113,9 +114,27 @@ error_t graphics_restart(int width, int height)
     return stat;
 }
 
+bool graphics_step()
+{
+	bool cont = true;
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event)) {
+		switch (event.type) {
+			case SDL_QUIT:
+				cont = false;
+				break;
+		}
+    }
+
+    return cont;
+}
+
 void graphics_render()
 {
-
+	SDL_RenderClear(renderer);
+	//SDL_RenderCopy(renderer, texture, NULL, NULL);
+	SDL_RenderPresent(renderer);
 }
 
 void graphics_end()
@@ -169,6 +188,8 @@ error_t sdl_subsys_init(int width, int height)
 		graphics_end();
 		return ERR_EXTERN;
 	}
+
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, width, height);
 	if (!texture) {
