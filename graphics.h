@@ -18,7 +18,7 @@ typedef enum _gfx_action {
 	GA_NONE, // No action to perform
 	GA_ADDR, // Get the base address of the graphics mmap
 	GA_BUFSZ, // Get the size (in bytes) of the graphics mmap
-	GA_RES, // Get the current graphics resolution as (width << 16) | height
+	GA_RES, // Get the current graphics resolution as width | height << 16
 } gfx_action;
 
 typedef enum _gfx_state {
