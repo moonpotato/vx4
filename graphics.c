@@ -164,8 +164,6 @@ error_t sdl_subsys_init(int width, int height)
 		return ERR_EXTERN;
 	}
 
-	return ERR_NOERR;
-
 	renderer = SDL_CreateRenderer(window, -1, 0);
 	if (!renderer) {
 		graphics_end();
