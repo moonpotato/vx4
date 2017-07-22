@@ -57,22 +57,21 @@ static error_t sync_disk(disk_id num);
 
 /**
  * Changes the offset of the file buffer and reloads it from the filesystem.
- * Optionally, writes the old buffer to its position in the backing file
- * first. If seeking fails, the buffer and its offset remains unchanged.
+ * If seeking fails, the buffer and its offset remains unchanged. Note than
+ * any changes made to the disk buffer will be lost unless sync_disk is
+ * called first.
  *
  * IN num: The disk number to operate on.
  * IN new_off: The new offset for the buffer window.
- * IN sync_first: If true, write the old buffer before reading.
  *
  * Returns:
  * ERR_NOERR: The file was successfully written out.
  * ERR_INVAL: The disk provided was out of range (can never exist), or
  * the new offset is too close to the end of the file.
  * ERR_PCOND: The disk provided is not currently in use.
- * ERR_FILE: Seeking in the file failed, or if sync_first == true, the
- * call to sync_disk failed.
+ * ERR_FILE: Seeking in the file failed.
  */
-static error_t seek_disk(disk_id num, disk_addr new_off, bool sync_first);
+static error_t seek_disk(disk_id num, disk_addr new_off);
 
 /**
  * Binds a file to a disk slot, maps a buffer into virtual memory at a set
@@ -220,7 +219,7 @@ error_t sync_disk(disk_id num)
 	return ERR_NOERR;
 }
 
-error_t seek_disk(disk_id num, disk_addr new_off, bool sync_first)
+error_t seek_disk(disk_id num, disk_addr new_off)
 {
 	if (!IS_VALID_DISK(num)) {
 		return ERR_INVAL;
@@ -235,12 +234,6 @@ error_t seek_disk(disk_id num, disk_addr new_off, bool sync_first)
 
 	if (!curr->active) {
         return ERR_PCOND;
-	}
-
-	if (sync_first) {
-		if (sync_disk(num) != ERR_NOERR) {
-			return ERR_FILE;
-		}
 	}
 
 	if (fseek(curr->file, new_off, SEEK_SET) != 0) {
@@ -286,7 +279,7 @@ error_t bind_disk(disk_id num, const char *filename)
 		return ERR_NOMEM;
 	}
 
-	seek_disk(num, 0, false);
+	seek_disk(num, 0);
 
 	mem_map_device(DISK_MMAP_ADDR(num), curr->buffer);
 
@@ -458,7 +451,7 @@ void data_write(port_id num, uint32_t data)
 			return;
 
 		case DA_SEEK:
-			if (seek_disk(num, data, true) == ERR_NOERR) {
+			if (seek_disk(num, data) == ERR_NOERR) {
 				action->res = DS_OK;
 			}
 			else {
