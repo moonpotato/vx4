@@ -13,7 +13,8 @@
 // Internal constants + helper macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define IS_VALID_MODE(width, height) (((width) * (height) * 4u) < GFX_MEM_MAX)
+#define RECT_BYTE_SIZE(width, height) ((width) * (height) * 4u)
+#define IS_VALID_MODE(width, height) (RECT_BYTE_SIZE((width), (height)) < GFX_MEM_MAX)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Module internal declarations
@@ -23,8 +24,8 @@ static SDL_Window *window;
 static SDL_Renderer *renderer;
 static SDL_Texture *texture;
 
-static uint16_t win_width;
-static uint16_t win_height;
+static int win_width;
+static int win_height;
 
 static error_t sdl_subsys_init(int width, int height);
 static void sdl_subsys_quit();
@@ -62,8 +63,8 @@ error_t graphics_begin(int width, int height)
 		return stat;
 	}
 
-    win_width = (uint16_t)width;
-    win_height = (uint16_t)height;
+    win_width = width;
+    win_height = height;
 
 	gfx_buffer = malloc(GFX_MEM_MAX);
 	if (gfx_buffer == NULL) {
@@ -104,8 +105,8 @@ error_t graphics_restart(int width, int height)
 	int stat = sdl_subsys_init(width, height);
 
 	if (stat == ERR_NOERR) {
-		win_width = (uint16_t)width;
-		win_height = (uint16_t)height;
+		win_width = width;
+		win_height = height;
 	}
 	else {
         gfx_init = false;
@@ -132,8 +133,16 @@ bool graphics_step()
 
 void graphics_render()
 {
+	void *pixels;
+	int pitch;
+
+	if (SDL_LockTexture(texture, NULL, &pixels, &pitch) == 0) {
+		memcpy(pixels, gfx_buffer, RECT_BYTE_SIZE(win_width, win_height));
+		SDL_UnlockTexture(texture);
+	}
+
 	SDL_RenderClear(renderer);
-	//SDL_RenderCopy(renderer, texture, NULL, NULL);
+	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 }
 
