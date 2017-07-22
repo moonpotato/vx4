@@ -248,7 +248,10 @@ error_t seek_disk(disk_id num, disk_addr new_off)
 	}
 	curr->off = new_off;
 
-	fread(curr->buffer, 1, MEM_BLK_SIZE, curr->file);
+	if (fread(curr->buffer, 1, MEM_BLK_SIZE, curr->file) != MEM_BLK_SIZE) {
+		return ERR_FILE;
+	}
+
 	return ERR_NOERR;
 }
 
