@@ -10,10 +10,6 @@
 
 typedef uint16_t disk_id;
 
-typedef uint32_t disk_addr; // Disks use linear addressing
-typedef uint32_t disk_size; // General size type for disk addressing
-typedef uint8_t disk_block; // Compatible with mem_block
-
 ////////////////////////////////////////////////////////////////////////////////
 // Constants + helper macros
 ////////////////////////////////////////////////////////////////////////////////
