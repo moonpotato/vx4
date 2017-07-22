@@ -143,7 +143,7 @@ error_t sdl_subsys_init(int width, int height)
 		return ERR_EXTERN;
 	}
 
-	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, width, height);
 	if (!texture) {
 		return ERR_EXTERN;
 	}
