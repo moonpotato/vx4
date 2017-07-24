@@ -510,5 +510,13 @@ uint32_t data_read(port_id num)
 		case DA_SEEK:
 			action->res = DS_OK;
 			return disk->off;
+
+		case DA_ADDR:
+			action->res = DS_OK;
+			return DISK_MMAP_ADDR(curr);
+
+		case DA_BUFSZ:
+			action->res = DS_OK;
+			return MEM_BLK_SIZE;
 	}
 }
