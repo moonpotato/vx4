@@ -1,8 +1,5 @@
 #include "error.h"
 
-#include "mem.h"
-#include "port.h"
-#include "register.h"
 #include "textio.h"
 #include "sysp.h"
 #include "fwload.h"
