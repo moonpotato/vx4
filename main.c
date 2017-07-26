@@ -8,6 +8,7 @@
 #include "fwload.h"
 #include "disk.h"
 #include "graphics.h"
+#include "kbd.h"
 
 // Needed for any program that runs with SDL2
 #include <SDL2/SDL_main.h>
@@ -37,9 +38,9 @@ int main(int argc, char *argv[])
 	load_disks(argc - 1, &argv[1]);
 
 	// At the moment, use a fixed-size render window
-	if (graphics_begin(640, 480) != ERR_NOERR) {
-		fprintf(stderr, "Falling back to no graphics mode...\n");
-	}
+	DIE_ON(graphics_begin(640, 480));
+
+	DIE_ON(install_keyboard_handler());
 
 	// TODO //
 	while (graphics_step()) {
@@ -47,6 +48,8 @@ int main(int argc, char *argv[])
 	}
 
 	// Clean up now, in reverse order
+	remove_keyboard_handler();
+
 	graphics_end();
 
 	unload_disks();
