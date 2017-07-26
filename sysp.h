@@ -20,13 +20,13 @@ typedef enum _sys_action {
 /**
  * Registers the system handler on the next available port.
  *
- * Returns: Any errors occuring during a call to port_insert.
+ * Returns: Any errors occurring during a call to port_insert.
  */
 extern error_t install_system_handler();
 
 /**
  * Unregisters the system handler from its assigned port.
  *
- * Returns: Any errors occuring during a call to port_remove.
+ * Returns: Any errors occurring during a call to port_remove.
  */
 extern error_t remove_system_handler();
