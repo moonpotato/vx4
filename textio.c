@@ -51,14 +51,14 @@ error_t remove_textio_handler()
 // Module internal functions
 ////////////////////////////////////////////////////////////////////////////////
 
-static void console_write(port_id num, uint32_t c)
+void console_write(port_id num, uint32_t c)
 {
 	(void)num;
 
 	putchar((unsigned char)c);
 }
 
-static uint32_t console_read(port_id num)
+uint32_t console_read(port_id num)
 {
 	(void)num;
 
