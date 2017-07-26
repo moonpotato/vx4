@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <string.h>
 #include <strings.h> // ffs(3) is in this header on modern systems
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +70,11 @@ void interrupt_disable()
 void interrupt_enable()
 {
 	disabled = false;
+}
+
+void interrupt_clear_all()
+{
+	memset(intr_buffer, 0, INTR_BUFFER_SIZE * sizeof (unsigned));
 }
 
 intr_id interrupt_which()

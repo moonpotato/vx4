@@ -43,6 +43,13 @@ extern void interrupt_disable();
 extern void interrupt_enable();
 
 /**
+ * Clear all set interrupts at once, ignoring them. Might be used immediately
+ * proceeding a call to interrupt_enable to ignore interrupts raised while
+ * receipt was disabled.
+ */
+extern void interrupt_clear_all();
+
+/**
  * Get the lowest-numbered interrupt that is currently raised, and
  * clear it.
  *
