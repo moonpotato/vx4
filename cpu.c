@@ -20,9 +20,18 @@ bool cpu_step()
 	// The following line is stopgap, will be handled in firmware
     if (interrupt_which() == INTR_HALT) { cpu_queue_halt(); }
 
-	if (do_halt)
-	{
+	if (do_halt) {
+		do_halt = false;
+
 		return false;
+	}
+
+	if (do_reset) {
+		do_reset = false;
+
+        interrupt_clear_all();
+        interrupt_enable();
+        interrupt_raise(INTR_RESET);
 	}
 
 	return true;
