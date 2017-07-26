@@ -26,7 +26,7 @@ static void unload_disks();
 // Stub, until CPU system is written
 bool cpu_step()
 {
-    return (interrupt_which() != 1);
+    return (interrupt_which() != INTR_HALT);
 }
 
 int main(int argc, char *argv[])

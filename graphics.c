@@ -176,7 +176,7 @@ void graphics_step()
     while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 			case SDL_QUIT:
-				interrupt_raise(1);
+				interrupt_raise(INTR_HALT);
 				break;
 
 			case SDL_KEYDOWN:
