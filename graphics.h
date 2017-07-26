@@ -32,12 +32,52 @@ typedef enum _gfx_state {
 // Function declarations
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Start the graphics system, including creating a window, framebuffer
+ * and control ports.
+ *
+ * IN width, height: The dimensions of the window to create.
+ *
+ * Returns:
+ * ERR_NOERR: All operations completed successfully.
+ * ERR_INVAL: The window dimensions specified were too large.
+ * ERR_EXTERN: An error occurred while attempting to initialize the
+ * rendering subsystem.
+ * ERR_NOMEM: The framebuffer couldn't be allocated.
+ * ERR_PORT: Enought ports couldn't be allocated for the graphics system.
+ */
 extern error_t graphics_begin(int width, int height);
 
+/**
+ * Reinitialize the rendering subsystem with a different window size.
+ *
+ * IN width, height: The dimensions of the window to create.
+ *
+ * Returns:
+ * ERR_NOERR: All operations completed successfully.
+ * ERR_PCOND: The graphics system wasn't already initialized, use
+ * graphics_begin instead.
+ * ERR_INVAL: The window dimensions specified were too large.
+ * ERR_EXTERN: An error occurred while attempting to initialize the
+ * rendering subsystem.
+ */
 extern error_t graphics_restart(int width, int height);
 
+/**
+ * Draw the graphics framebuffer to the window, and update the window on
+ * screen.
+ */
 extern void graphics_render();
 
+/**
+ * Process all frame-wise and event loop actions for the graphics subsystem.
+ *
+ * Returns: Whether the application should continue executing.
+ */
 extern bool graphics_step();
 
+/**
+ * Clean up all resources related to the graphics subsystem and shut it down.
+ * Must be called on application exit to avoid leaking graphics resources.
+ */
 extern void graphics_end();

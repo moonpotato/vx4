@@ -21,26 +21,77 @@
 // Module internal declarations
 ////////////////////////////////////////////////////////////////////////////////
 
+// Pointers to resources used by SDL for rendering.
 static SDL_Window *window;
 static SDL_Renderer *renderer;
 static SDL_Texture *texture;
 
+// The current dimensions of the window
 static int win_width;
 static int win_height;
 
+/**
+ * Initialize all resources for the SDL rendering subsystem, and create
+ * the rendering window.
+ *
+ * IN width, height: The dimensions of the window to create.
+ *
+ * Returns:
+ * ERR_NOERR: All operations completed successfully.
+ * ERR_INVAL: The window dimensions specified were too large.
+ * ERR_EXTERN: An error occurred while trying to acquire one of the resources
+ * required for rendering.
+ */
 static error_t sdl_subsys_init(int width, int height);
+
+/**
+ * Clean up the all resources of the SDL rendering subsystem, and close
+ * the window.
+ */
 static void sdl_subsys_quit();
 
+// The memory-mapped framebuffer
 static uint8_t *gfx_buffer;
 
-static gfx_action act;
-static gfx_state res;
-static uint32_t port_data;
+// State for the command ports
+static gfx_action act; // The current queued action
+static gfx_state res; // The success/failure to be reported via command_reply
+static uint32_t port_data; // Auxiliary data used by the port functions
 
+/**
+ * Sets the command to be executed on subsequent reads/writes to the data port.
+ *
+ * IN num: Ignored, part of the callback signature.
+ * IN command: The command to set.
+ */
 static void command_recv(port_id num, uint32_t command);
+
+/**
+ * Fetch the status of the last read/write to the data port.
+ *
+ * IN num: Ignored, part of the callback signature.
+ *
+ * Returns: That status.
+ */
 static uint32_t command_reply(port_id num);
 
+/**
+ * Executes the set command, if it requires data being written to the port,
+ * or doesn't involve returning data to be read on the port.
+ *
+ * IN num: Ignored, part of the callback signature.
+ * IN data: The data that was written to the port that triggered the callback.
+ */
 static void data_write(port_id num, uint32_t data);
+
+/**
+ * Executes the set command, if it involves reading of the data port to
+ * return data.
+ *
+ * IN num: Ignored, part of the callback signature.
+ *
+ * Returns: Whatever data was requested to be read from the port.
+ */
 static uint32_t data_read(port_id num);
 
 static port_entry graphics_port[] = {
@@ -51,6 +102,7 @@ static port_entry graphics_port[] = {
 static port_id cmd_port;
 static port_id data_port;
 
+// Has the graphics subsystem been initialized yet?
 static bool gfx_init;
 
 ////////////////////////////////////////////////////////////////////////////////
