@@ -3,6 +3,7 @@
 #include "error.h"
 #include "mem.h"
 #include "port.h"
+#include "kbd.h"
 
 #include <SDL2/SDL.h>
 
@@ -125,6 +126,10 @@ bool graphics_step()
 			case SDL_QUIT:
 				cont = false;
 				break;
+
+			case SDL_KEYDOWN:
+                keyboard_queue_press((event.key.keysym.mod << 16) | (event.key.keysym.scancode & 0xFFFF));
+                break;
 		}
     }
 
