@@ -6,6 +6,7 @@
 #include "disk.h"
 #include "graphics.h"
 #include "kbd.h"
+#include "intr.h"
 
 // Needed for any program that runs with SDL2
 #include <SDL2/SDL_main.h>
@@ -14,12 +15,19 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 static size_t n_disks;
 static disk_id *loaded_disks;
 
 static void load_disks(int argc, char *argv[]);
 static void unload_disks();
+
+// Stub, until CPU system is written
+bool cpu_step()
+{
+    return (interrupt_which() != 1);
+}
 
 int main(int argc, char *argv[])
 {
@@ -39,9 +47,12 @@ int main(int argc, char *argv[])
 
 	DIE_ON(install_keyboard_handler());
 
-	// TODO //
-	while (graphics_step()) {
+	bool cont = true;
+	while (cont) {
+		graphics_step();
 		graphics_render();
+
+		cpu_step();
 	}
 
 	// Clean up now, in reverse order

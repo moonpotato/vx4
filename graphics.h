@@ -64,17 +64,15 @@ extern error_t graphics_begin(int width, int height);
 extern error_t graphics_restart(int width, int height);
 
 /**
+ * Process all frame-wise and event loop actions for the graphics subsystem.
+ */
+extern void graphics_step();
+
+/**
  * Draw the graphics framebuffer to the window, and update the window on
  * screen.
  */
 extern void graphics_render();
-
-/**
- * Process all frame-wise and event loop actions for the graphics subsystem.
- *
- * Returns: Whether the application should continue executing.
- */
-extern bool graphics_step();
 
 /**
  * Clean up all resources related to the graphics subsystem and shut it down.

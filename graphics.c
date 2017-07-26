@@ -4,6 +4,7 @@
 #include "mem.h"
 #include "port.h"
 #include "kbd.h"
+#include "intr.h"
 
 #include <SDL2/SDL.h>
 
@@ -168,15 +169,14 @@ error_t graphics_restart(int width, int height)
     return stat;
 }
 
-bool graphics_step()
+void graphics_step()
 {
-	bool cont = true;
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 			case SDL_QUIT:
-				cont = false;
+				interrupt_raise(1);
 				break;
 
 			case SDL_KEYDOWN:
@@ -184,8 +184,6 @@ bool graphics_step()
                 break;
 		}
     }
-
-    return cont;
 }
 
 void graphics_render()
