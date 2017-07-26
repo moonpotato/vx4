@@ -42,6 +42,10 @@
 			<Add library="dl" />
 			<Add library="SDL2" />
 		</Linker>
+		<Unit filename="cpu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cpu.h" />
 		<Unit filename="disk.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -58,6 +62,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="graphics.h" />
+		<Unit filename="intr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intr.h" />
+		<Unit filename="kbd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="kbd.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
