@@ -18,7 +18,7 @@ typedef uint16_t intr_id;
 #define INTR_INVALID INTR_NUM_INTRS // Will never be a valid interrupt number
 
 enum _intr_name {
-    INTR_RESTART, // Soft reboot the system
+    INTR_RESET, // Soft reboot the system
     INTR_HALT, // Stop execution, quit the program
 };
 
