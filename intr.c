@@ -89,6 +89,7 @@ intr_id interrupt_which()
         int pos = ffs(intr_buffer[i]) - 1;
 
         if (pos != -1) {
+			// We clear the interrupt first so it doesn't fire infinitely
             intr_buffer[i] &= ~(1u << pos);
             return (i * INTRS_IN_ELEM) + pos;
         }
