@@ -21,10 +21,31 @@ typedef uint16_t intr_id;
 // Function declarations
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Raise or clear a specific interrupt.
+ *
+ * IN which: The interrupt to raise/clear.
+ *
+ * Returns:
+ * ERR_NOERR: The operation completed successfully.
+ * ERR_INVAL: The interrupt specified was not a valid interrupt number.
+ */
 extern error_t interrupt_raise(intr_id which);
 extern error_t interrupt_clear(intr_id which);
 
+/**
+ * Disable or enable the delivery of all interrupts. While interrupts
+ * are disabled, none will be indicated by interrupt_which but any
+ * interrupts raised will be delivered the next time interrupts are
+ * re-enabled.
+ */
 extern void interrupt_disable();
 extern void interrupt_enable();
 
+/**
+ * Get the lowest-numbered interrupt that is currently raised, and
+ * clear it.
+ *
+ * Returns: The lowest interrupt number raised, or INTR_INVALID if none are.
+ */
 extern intr_id interrupt_which();

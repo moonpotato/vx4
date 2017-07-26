@@ -4,7 +4,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
-#include <strings.h>
+#include <strings.h> // ffs(3) is in this header on modern systems
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
@@ -12,6 +12,7 @@
 
 #define IS_VALID_INTR(intr) ((intr) < INTR_NUM_INTRS)
 
+// How many bits fit in each array element?
 #define INTRS_IN_ELEM (8 * sizeof (unsigned))
 #define INTR_BUFFER_SIZE (INTR_NUM_INTRS / INTRS_IN_ELEM)
 
@@ -19,6 +20,10 @@
 // Module internal declarations
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Override, as long as true interrupt_which will always behave
+ * as though there are none.
+ */
 static bool disabled;
 
 /**
@@ -29,6 +34,12 @@ static unsigned intr_buffer[INTR_BUFFER_SIZE];
 ////////////////////////////////////////////////////////////////////////////////
 // Interface functions
 ////////////////////////////////////////////////////////////////////////////////
+
+/*
+ * For anyone unclear on bitwise techniques, x |= 1 << y sets the yth bit of
+ * x and x &= ~(1 << y) clears ONLY the yth bit of x (x &= 1 << y would clear
+ * all EXCEPT the yth bit of x).
+ */
 
 error_t interrupt_raise(intr_id which)
 {
@@ -67,6 +78,8 @@ intr_id interrupt_which()
     }
 
     for (size_t i = 0; i < INTR_BUFFER_SIZE; ++i) {
+		// ffs(3) (Find First Set) returns a 1-based index and 0 for none
+		// We have to correct for that
         int pos = ffs(intr_buffer[i]) - 1;
 
         if (pos != -1) {
