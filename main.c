@@ -6,7 +6,7 @@
 #include "disk.h"
 #include "graphics.h"
 #include "kbd.h"
-#include "intr.h"
+#include "cpu.h"
 
 // Needed for any program that runs with SDL2
 #include <SDL2/SDL_main.h>
@@ -22,12 +22,6 @@ static disk_id *loaded_disks;
 
 static void load_disks(int argc, char *argv[]);
 static void unload_disks();
-
-// Stub, until CPU system is written
-bool cpu_step()
-{
-    return (interrupt_which() != INTR_HALT);
-}
 
 int main(int argc, char *argv[])
 {
@@ -52,7 +46,7 @@ int main(int argc, char *argv[])
 		graphics_step();
 		graphics_render();
 
-		cpu_step();
+		cont = cpu_step();
 	}
 
 	// Clean up now, in reverse order

@@ -1,6 +1,7 @@
 #include "sysp.h"
 
 #include "port.h"
+#include "cpu.h"
 
 #include <stdint.h>
 #include <stddef.h>
@@ -140,12 +141,20 @@ uint32_t command_execute(port_id num)
 	(void)num;
 
 	switch (curr_op.act) {
-		case SYS_PORTINFO:
-			return read_port_ident(curr_op.data, false);
-
 		case SYS_CLEAR:
 		default:
 			return 0;
+
+		case SYS_RESET:
+			cpu_queue_reset();
+			return SYS_RESET;
+
+		case SYS_HALT:
+			cpu_queue_halt();
+			return SYS_HALT;
+
+		case SYS_PORTINFO:
+			return read_port_ident(curr_op.data, false);
 	}
 }
 
