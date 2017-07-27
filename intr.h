@@ -21,6 +21,7 @@ typedef uint16_t intr_id;
 enum _intr_name {
     INTR_RESET, // Soft reboot the system
     INTR_HALT, // Stop execution, quit the program
+    INTR_GENF, // General fault, causes reset if can't be dealt with
 };
 
 ////////////////////////////////////////////////////////////////////////////////
