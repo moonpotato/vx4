@@ -49,14 +49,15 @@ int main(int argc, char *argv[])
 	// This causes the CPU to jump to the correct address in firmware
     cpu_queue_reset();
 
+    DIE_ON(cpu_begin());
+
 	// Main loop
-	bool cont = true;
-	while (cont) {
+	while (!cpu_halting()) {
 		graphics_step();
 		graphics_render();
-
-		cont = cpu_step();
 	}
+
+	cpu_wait_end();
 
 	// Clean up now, in reverse order
 	remove_keyboard_handler();

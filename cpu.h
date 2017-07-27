@@ -1,5 +1,6 @@
 #pragma once
 
+#include "error.h"
 #include "mem.h"
 
 #include <stdbool.h>
@@ -9,11 +10,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Advance the CPU by executing a single instruction.
+ * Starts the CPU simulation thread.
  *
- * Returns: If the CPU should continue executing.
+ * Returns:
+ * ERR_NOERR: The CPU was started.
+ * ERR_EXTERN: An error occurred creating the thread.
+ *
  */
-extern bool cpu_step();
+extern error_t cpu_begin();
+
+/**
+ * Waits for the end of the CPU simulation thread.
+ */
+extern void cpu_wait_end();
+
+/**
+ * Returns whether the CPU is preparing to stop.
+ */
+extern bool cpu_halting();
 
 /**
  * Set the CPU for immediate (non-interrupt-based) soft reset next step.

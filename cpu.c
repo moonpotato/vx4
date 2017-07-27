@@ -12,6 +12,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <SDL2/SDL_thread.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,8 +41,68 @@ typedef struct _cpu_flags {
 
 static cpu_flags flags;
 
+static SDL_Thread *cpu_thread;
+static bool do_stopping;
+
+/**
+ * Advance the CPU by executing a single instruction.
+ *
+ * Returns: If the CPU should continue executing.
+ */
+static bool cpu_step();
+
+/**
+ * Run the CPU indefinitely
+ */
+static int cpu_loop(void *data);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Interface functions
+////////////////////////////////////////////////////////////////////////////////
+
+error_t cpu_begin()
+{
+    cpu_thread = SDL_CreateThread(cpu_loop, "cpu", NULL);
+
+    if (!cpu_thread) {
+		return ERR_EXTERN;
+    }
+
+    return ERR_NOERR;
+}
+
+void cpu_wait_end()
+{
+    SDL_WaitThread(cpu_thread, NULL);
+}
+
+bool cpu_halting()
+{
+	return do_stopping;
+}
+
+void cpu_queue_reset()
+{
+	flags.reset = true;
+}
+
+void cpu_queue_halt()
+{
+	flags.halt = true;
+}
+
+void cpu_queue_jump(mem_addr new_ip)
+{
+    reg_ip = new_ip;
+}
+
+void cpu_interrupt_set(bool enabled)
+{
+	flags.intr = enabled;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Module internal functions
 ////////////////////////////////////////////////////////////////////////////////
 
 bool cpu_step()
@@ -120,22 +182,12 @@ bool cpu_step()
 	return true;
 }
 
-void cpu_queue_reset()
+int cpu_loop(void *data)
 {
-	flags.reset = true;
-}
+	(void)data;
 
-void cpu_queue_halt()
-{
-	flags.halt = true;
-}
+	while (cpu_step());
 
-void cpu_queue_jump(mem_addr new_ip)
-{
-    reg_ip = new_ip;
-}
-
-void cpu_interrupt_set(bool enabled)
-{
-	flags.intr = enabled;
+	do_stopping = true;
+	return 0;
 }
