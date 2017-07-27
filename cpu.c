@@ -69,6 +69,9 @@ error_t cpu_begin()
         return ERR_EXTERN;
 	}
 
+	// Cause the CPU to jump to the correct firmware address
+	flags.reset = true;
+
     cpu_thread = SDL_CreateThread(cpu_loop, "cpu", NULL);
 
     if (!cpu_thread) {
@@ -81,8 +84,8 @@ error_t cpu_begin()
 
 void cpu_wait_end()
 {
+	SDL_DestroyMutex(flags_mutex);
     SDL_WaitThread(cpu_thread, NULL);
-    SDL_DestroyMutex(flags_mutex);
 }
 
 bool cpu_halting()
@@ -228,6 +231,12 @@ int cpu_loop(void *data)
 
 	while (cpu_step());
 
+	if (SDL_LockMutex(flags_mutex) != 0) {
+		return 1;
+	}
+
 	do_stopping = true;
+
+	SDL_UnlockMutex(flags_mutex);
 	return 0;
 }

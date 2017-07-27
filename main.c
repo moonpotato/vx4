@@ -45,10 +45,7 @@ int main(int argc, char *argv[])
 
 	DIE_ON(install_keyboard_handler());
 
-	// Finally, trigger a CPU reset
-	// This causes the CPU to jump to the correct address in firmware
-    cpu_queue_reset();
-
+	// Finally, begin the CPU simulation thread
     DIE_ON(cpu_begin());
 
 	// Main loop
