@@ -31,6 +31,7 @@ typedef struct _cpu_flags {
 	bool reset : 1;
 	bool halt : 1;
 	bool intr : 1; // Are interrupts enabled?
+	int reserved : 29; // Needed to fill out structure size
 } cpu_flags;
 
 static cpu_flags flags;
