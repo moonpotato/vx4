@@ -6,7 +6,6 @@
 #include "disk.h"
 #include "graphics.h"
 #include "kbd.h"
-#include "intr.h"
 #include "cpu.h"
 
 // Needed for any program that runs with SDL2
@@ -42,9 +41,9 @@ int main(int argc, char *argv[])
 
 	DIE_ON(install_keyboard_handler());
 
-	// Finally, raise the reset interrupt
+	// Finally, trigger a CPU reset
 	// This causes the CPU to jump to the correct address in firmware
-    interrupt_raise(INTR_RESET);
+    cpu_queue_reset();
 
 	// Main loop
 	bool cont = true;
