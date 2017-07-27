@@ -47,6 +47,7 @@ enum _arg_type {
 enum _ins_type {
 	INS_NOP,
 	INS_HALT,
+	INS_JMP,
 };
 
 typedef struct _instruction {
@@ -129,6 +130,17 @@ bool cpu_step()
 		case INS_HALT:
 			flags.halt = true;
 			break;
+
+		case INS_JMP:
+			if (curr.more == 4) {
+                if (curr.arg1 == IA_CONS) {
+                    reg_ip = *(mem_addr *)&additional;
+                }
+			}
+			else {
+				interrupt_raise(INTR_INS);
+			}
+
     }
 
 	return true;
