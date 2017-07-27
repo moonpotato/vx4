@@ -77,7 +77,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="mem.h" />
-		<Unit filename="module.h" />
 		<Unit filename="port.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -86,6 +85,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="register.h" />
+		<Unit filename="stack.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="stack.h" />
 		<Unit filename="sysp.c">
 			<Option compilerVar="CC" />
 		</Unit>
