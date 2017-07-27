@@ -149,6 +149,7 @@ bool cpu_step()
 	}
 
 	if (flags.halt) {
+		SDL_UnlockMutex(flags_mutex);
 		return false;
 	}
 
@@ -172,10 +173,12 @@ bool cpu_step()
             // So we use them as a signal to reset (0) or halt (1) instead
             if (next_ip == 0) {
 				flags.reset = true;
+				SDL_UnlockMutex(flags_mutex);
 				return true;
             }
             else if (next_ip == 1) {
 				flags.halt = true;
+				SDL_UnlockMutex(flags_mutex);
 				return true;
             }
 
