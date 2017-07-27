@@ -20,6 +20,7 @@ enum _intr_name {
     INTR_HALT, // Stop execution, quit the program
     INTR_GENF, // General fault, causes reset if can't be dealt with
     INTR_INS, // Execution encountered an invalid instruction
+    INTR_KBD, // A key press was received
 
     INTR_INVALID = 512 // Will never be a valid interrupt number
 };

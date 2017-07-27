@@ -1,6 +1,7 @@
 #include "kbd.h"
 
 #include "port.h"
+#include "intr.h"
 
 #include <stdint.h>
 #include <stddef.h>
@@ -22,13 +23,21 @@
  */
 static uint32_t keyboard_read_queue(port_id num);
 
+/**
+ * Sets the do_interrupt value.
+ */
+static void keyboard_set_interrupt(port_id num, uint32_t data);
+
+// Should every key input cause a hardware interrupt?
+static bool do_interrupt;
+
 static kbd_scancode scancode_buffer[KBD_BUFFER_SIZE];
 static size_t buffer_start;
 static size_t buffer_end;
 
 static port_entry kbd_port = {
-	"Window keyboard v1",
-	NULL, // Keyboard is an input-only device. Commands may be accepted in the future.
+	"Window keyboard v2",
+	keyboard_set_interrupt,
 	keyboard_read_queue // Port reads come from the buffer.
 };
 
@@ -52,6 +61,10 @@ void keyboard_queue_press(kbd_scancode code)
 	if (buffer_end == buffer_start) {
         buffer_start = (buffer_start + 1) % KBD_BUFFER_SIZE;
 	}
+
+	if (do_interrupt) {
+        interrupt_raise(INTR_KBD);
+	}
 }
 
 error_t remove_keyboard_handler()
@@ -62,6 +75,13 @@ error_t remove_keyboard_handler()
 ////////////////////////////////////////////////////////////////////////////////
 // Module internal functions
 ////////////////////////////////////////////////////////////////////////////////
+
+void keyboard_set_interrupt(port_id num, uint32_t data)
+{
+    (void)num;
+
+    do_interrupt = (data) ? true : false;
+}
 
 uint32_t keyboard_read_queue(port_id num)
 {
