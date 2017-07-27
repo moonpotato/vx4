@@ -10,7 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // Enums are typically represented by signed types, so check positive
-#define IS_VALID_REGISTER(reg) (((reg) < REG_NUM_REGS) && ((reg) >= 0))
+#define IS_VALID_REGISTER(reg) ((reg) < REG_NUM_REGS)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Module internal declarations
@@ -33,7 +33,7 @@ static uint32_t registers[REG_NUM_REGS];
  * 1 in the new "array".
  */
 
-error_t reg_read_low_byte(reg_name which, uint8_t *dest)
+error_t reg_read_low_byte(reg_id which, uint8_t *dest)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
@@ -45,7 +45,7 @@ error_t reg_read_low_byte(reg_name which, uint8_t *dest)
 	return ERR_NOERR;
 }
 
-error_t reg_read_high_byte(reg_name which, uint8_t *dest)
+error_t reg_read_high_byte(reg_id which, uint8_t *dest)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
@@ -57,7 +57,7 @@ error_t reg_read_high_byte(reg_name which, uint8_t *dest)
 	return ERR_NOERR;
 }
 
-error_t reg_read_low_dbyte(reg_name which, uint16_t *dest)
+error_t reg_read_low_dbyte(reg_id which, uint16_t *dest)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
@@ -69,7 +69,7 @@ error_t reg_read_low_dbyte(reg_name which, uint16_t *dest)
 	return ERR_NOERR;
 }
 
-error_t reg_read_high_dbyte(reg_name which, uint16_t *dest)
+error_t reg_read_high_dbyte(reg_id which, uint16_t *dest)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
@@ -81,7 +81,7 @@ error_t reg_read_high_dbyte(reg_name which, uint16_t *dest)
 	return ERR_NOERR;
 }
 
-error_t reg_read_word(reg_name which, uint32_t *dest)
+error_t reg_read_word(reg_id which, uint32_t *dest)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
@@ -91,7 +91,7 @@ error_t reg_read_word(reg_name which, uint32_t *dest)
 	return ERR_NOERR;
 }
 
-error_t reg_write_low_byte(reg_name which, uint8_t val)
+error_t reg_write_low_byte(reg_id which, uint8_t val)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
@@ -103,7 +103,7 @@ error_t reg_write_low_byte(reg_name which, uint8_t val)
 	return ERR_NOERR;
 }
 
-error_t reg_write_high_byte(reg_name which, uint8_t val)
+error_t reg_write_high_byte(reg_id which, uint8_t val)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
@@ -115,7 +115,7 @@ error_t reg_write_high_byte(reg_name which, uint8_t val)
 	return ERR_NOERR;
 }
 
-error_t reg_write_low_dbyte(reg_name which, uint16_t val)
+error_t reg_write_low_dbyte(reg_id which, uint16_t val)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
@@ -127,7 +127,7 @@ error_t reg_write_low_dbyte(reg_name which, uint16_t val)
 	return ERR_NOERR;
 }
 
-error_t reg_write_high_dbyte(reg_name which, uint16_t val)
+error_t reg_write_high_dbyte(reg_id which, uint16_t val)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
@@ -139,7 +139,7 @@ error_t reg_write_high_dbyte(reg_name which, uint16_t val)
 	return ERR_NOERR;
 }
 
-error_t reg_write_word(reg_name which, uint32_t val)
+error_t reg_write_word(reg_id which, uint32_t val)
 {
 	if (!IS_VALID_REGISTER(which)) {
 		return ERR_INVAL;
