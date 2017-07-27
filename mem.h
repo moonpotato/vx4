@@ -41,7 +41,7 @@ typedef uint8_t mem_block; // Byte type to allow byte-wise memory access
  * ERR_INVAL: The provided address was not correctly aligned for the
  * requested size of data.
  */
-extern error_t mem_read_byte(mem_addr base, uint8_t *dest);
+extern void mem_read_byte(mem_addr base, uint8_t *dest);
 extern error_t mem_read_dbyte(mem_addr base, uint16_t *dest);
 extern error_t mem_read_word(mem_addr base, uint32_t *dest);
 
@@ -56,7 +56,7 @@ extern error_t mem_read_word(mem_addr base, uint32_t *dest);
  * ERR_INVAL: The provided address was not correctly aligned for the
  * size of data provided.
  */
-extern error_t mem_write_byte(mem_addr base, uint8_t val);
+extern void mem_write_byte(mem_addr base, uint8_t val);
 extern error_t mem_write_dbyte(mem_addr base, uint16_t val);
 extern error_t mem_write_word(mem_addr base, uint32_t val);
 
@@ -120,7 +120,7 @@ extern mem_size mem_write_mem(mem_addr base, const void *src, mem_size num);
  * ERR_INVAL: The provided address was not correctly aligned for the
  * requested size.
  */
-extern error_t mem_set_bytes(mem_addr base, uint8_t val, mem_size num);
+extern void mem_set_bytes(mem_addr base, uint8_t val, mem_size num);
 extern error_t mem_set_dbytes(mem_addr base, uint16_t val, mem_size num);
 extern error_t mem_set_words(mem_addr base, uint32_t val, mem_size num);
 

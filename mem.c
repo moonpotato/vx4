@@ -95,7 +95,7 @@ static error_t remove_device_block(mem_blk_entry *block);
 // Interface functions
 ////////////////////////////////////////////////////////////////////////////////
 
-error_t mem_read_byte(mem_addr base, uint8_t *dest)
+void mem_read_byte(mem_addr base, uint8_t *dest)
 {
 	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
 	mem_addr off = MEM_BLOCK_MASK(base);
@@ -103,8 +103,6 @@ error_t mem_read_byte(mem_addr base, uint8_t *dest)
 	create_system_block(blk);
 
 	*dest = blk->base[off];
-
-	return ERR_NOERR;
 }
 
 error_t mem_read_dbyte(mem_addr base, uint16_t *dest)
@@ -139,7 +137,7 @@ error_t mem_read_word(mem_addr base, uint32_t *dest)
 	return ERR_NOERR;
 }
 
-error_t mem_write_byte(mem_addr base, uint8_t val)
+void mem_write_byte(mem_addr base, uint8_t val)
 {
 	mem_blk_entry *blk = &memory[MEM_BLOCK_IN(base)];
 	mem_addr off = MEM_BLOCK_MASK(base);
@@ -147,8 +145,6 @@ error_t mem_write_byte(mem_addr base, uint8_t val)
 	create_system_block(blk);
 
 	blk->base[off] = val;
-
-	return ERR_NOERR;
 }
 
 error_t mem_write_dbyte(mem_addr base, uint16_t val)
@@ -189,11 +185,7 @@ mem_size mem_read_string(mem_addr base, char *dest, mem_size max)
 	mem_size read = 0;
 
 	while (read < (max - 1)) {
-		error_t stat = mem_read_byte(base, udest);
-
-		if (stat != ERR_NOERR) {
-			break;
-		}
+		mem_read_byte(base, udest);
 
 		if (*udest == 0) {
 			break;
@@ -212,11 +204,7 @@ mem_size mem_read_mem(mem_addr base, void *dest, mem_size num)
 	mem_size read = 0;
 
 	while (read < num) {
-		error_t stat = mem_read_byte(base, udest);
-
-		if (stat != ERR_NOERR) {
-			break;
-		}
+		mem_read_byte(base, udest);
 
 		++base, ++udest, ++read;
 	}
@@ -230,11 +218,7 @@ mem_size mem_write_string(mem_addr base, const char *src)
 	mem_size written = 0;
 
 	do {
-		error_t stat = mem_write_byte(base, *usrc);
-
-		if (stat != ERR_NOERR) {
-			break;
-		}
+		mem_write_byte(base, *usrc);
 
 		++base, ++written;
 	} while (*usrc++ != 0);
@@ -248,11 +232,7 @@ mem_size mem_write_mem(mem_addr base, const void *src, mem_size num)
 	mem_size written = 0;
 
 	while (written < num) {
-		error_t stat = mem_write_byte(base, *usrc);
-
-		if (stat != ERR_NOERR) {
-			return written;
-		}
+		mem_write_byte(base, *usrc);
 
 		++base, ++usrc, ++written;
 	}
@@ -260,21 +240,15 @@ mem_size mem_write_mem(mem_addr base, const void *src, mem_size num)
 	return written;
 }
 
-error_t mem_set_bytes(mem_addr base, uint8_t val, mem_size num)
+void mem_set_bytes(mem_addr base, uint8_t val, mem_size num)
 {
 	mem_size written = 0;
 
 	while (written < num) {
-		error_t stat = mem_write_byte(base, val);
-
-		if (stat != ERR_NOERR) {
-			return stat;
-		}
+		mem_write_byte(base, val);
 
 		++base, ++written;
 	}
-
-	return ERR_NOERR;
 }
 
 error_t mem_set_dbytes(mem_addr base, uint16_t val, mem_size num)
