@@ -39,7 +39,6 @@
 			<Add option="-std=gnu11" />
 		</Compiler>
 		<Linker>
-			<Add library="dl" />
 			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="cpu.c">
