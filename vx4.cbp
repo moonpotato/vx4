@@ -39,6 +39,7 @@
 			<Add option="-std=gnu11" />
 		</Compiler>
 		<Linker>
+			<Add library="SDL2main" />
 			<Add library="SDL2" />
 		</Linker>
 		<Unit filename="cpu.c">
@@ -100,6 +101,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="textio.h" />
+		<Unit filename="winshim.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="winshim.h" />
 		<Extensions>
 			<envvars />
 			<code_completion />

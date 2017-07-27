@@ -5,7 +5,12 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <string.h>
-#include <strings.h> // ffs(3) is in this header on modern systems
+
+#ifdef __MINGW32__
+#include "winshim.h"
+#else
+#include <strings.h> // ffs(3) is in this header on modern POSIX systems
+#endif // __MINGW32__
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
@@ -64,9 +69,14 @@ void interrupt_clear_all()
 intr_id interrupt_which()
 {
     for (size_t i = 0; i < INTR_BUFFER_SIZE; ++i) {
-		// ffs(3) (Find First Set) returns a 1-based index and 0 for none
+		int pos //...
+		#ifdef __MINGW32__
+            = ffs_shim(intr_buffer[i]);
+        #else
+        // ffs(3) (Find First Set) returns a 1-based index and 0 for none
 		// We have to correct for that
-        int pos = ffs(intr_buffer[i]) - 1;
+            = ffs(intr_buffer[i]) - 1;
+        #endif // __MINGW32__
 
         if (pos != -1) {
 			// We clear the interrupt first so it doesn't fire infinitely
