@@ -17,6 +17,7 @@ static error_t instruction_jmpc(void *data);
 static error_t instruction_movrc(void *data);
 static error_t instruction_movmr(void *data);
 static error_t instruction_addrc(void *data);
+static error_t instruction_storr(void *data);
 
 instruction_info instructions[INS_NUM_INS] = {
     {instruction_nop, 0},
@@ -25,6 +26,7 @@ instruction_info instructions[INS_NUM_INS] = {
     {instruction_movrc, 5},
     {instruction_movmr, 5},
     {instruction_addrc, 5},
+    {instruction_storr, 2}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,4 +95,24 @@ static error_t instruction_addrc(void *data)
     reg_write_word(*dest, word);
 
     return ERR_NOERR;
+}
+
+static error_t instruction_storr(void *data)
+{
+	reg_id *dest = (reg_id *)data;
+	reg_id *src = (reg_id *)(dest + 1);
+
+	if (!IS_VALID_REGISTER(*dest)) {
+		return ERR_INVAL;
+    }
+    if (!IS_VALID_REGISTER(*src)) {
+		return ERR_INVAL;
+    }
+
+    mem_addr where;
+    reg_read_word(*dest, &where);
+    uint32_t word;
+    reg_read_word(*src, &word);
+
+    return mem_write_word(where, word);
 }
