@@ -58,6 +58,7 @@ dkms.conf
 # specific to CodeBlocks IDE
 *.layout
 *.depend
+*.save
 
 # generated directories
 bin/
