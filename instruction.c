@@ -23,9 +23,9 @@ instruction_info instructions[INS_NUM_INS] = {
     {instruction_nop, 0},
     {instruction_hlt, 0},
     {instruction_jmpc, 4},
-    {instruction_movrc, 5},
-    {instruction_movmr, 5},
-    {instruction_addrc, 5},
+    {instruction_movrc, 6},
+    {instruction_movmr, 6},
+    {instruction_addrc, 6},
     {instruction_storr, 2}
 };
 
