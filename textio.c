@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Module internal declarations
@@ -39,6 +40,10 @@ static port_id assigned_port;
 
 error_t install_textio_handler()
 {
+	// We want to see any results immediately
+	setvbuf(stdin, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
+
 	return port_install(&text_port, &assigned_port);
 }
 
