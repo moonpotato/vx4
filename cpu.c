@@ -17,6 +17,7 @@ static mem_addr bp; // Base pointer
 struct _cpu_flags {
 	bool reset : 1;
 	bool halt : 1;
+	bool intr : 1; // Are interrupts enabled?
 } flags;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +35,8 @@ bool cpu_step()
         mem_read_word(0x0, &ip); // The reset vector is in place of the 0th IV
         // Sensible values for sp and bp, remembering they grow down
         sp = bp = GFX_MMAP_START;
+        // Because we have a sensible stack, we can start with interrupts
+        flags.intr = true;
 	}
 
 	return true;

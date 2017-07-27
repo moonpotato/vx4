@@ -22,12 +22,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Override, as long as true interrupt_which will always behave
- * as though there are none.
- */
-static bool disabled;
-
-/**
  * Each interrupt being raised or not is represented as a single bit.
  */
 static unsigned intr_buffer[INTR_BUFFER_SIZE];
@@ -62,21 +56,6 @@ error_t interrupt_clear(intr_id which)
 	return ERR_NOERR;
 }
 
-void interrupt_disable()
-{
-	disabled = true;
-}
-
-void interrupt_enable()
-{
-	disabled = false;
-}
-
-bool interrupt_is_enabled()
-{
-	return !disabled;
-}
-
 void interrupt_clear_all()
 {
 	memset(intr_buffer, 0, INTR_BUFFER_SIZE * sizeof (unsigned));
@@ -84,10 +63,6 @@ void interrupt_clear_all()
 
 intr_id interrupt_which()
 {
-    if (disabled) {
-		return INTR_INVALID;
-    }
-
     for (size_t i = 0; i < INTR_BUFFER_SIZE; ++i) {
 		// ffs(3) (Find First Set) returns a 1-based index and 0 for none
 		// We have to correct for that

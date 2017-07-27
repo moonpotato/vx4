@@ -41,25 +41,7 @@ extern error_t interrupt_raise(intr_id which);
 extern error_t interrupt_clear(intr_id which);
 
 /**
- * Disable or enable the delivery of all interrupts. While interrupts
- * are disabled, none will be indicated by interrupt_which but any
- * interrupts raised will be delivered the next time interrupts are
- * re-enabled.
- */
-extern void interrupt_disable();
-extern void interrupt_enable();
-
-/**
- * Get whether interrupts are currently being delivered.
- *
- * Returns: true iff interrupts are currently enabled, false otherwise.
- */
-extern bool interrupt_is_enabled();
-
-/**
- * Clear all set interrupts at once, ignoring them. Might be used immediately
- * proceeding a call to interrupt_enable to ignore interrupts raised while
- * receipt was disabled.
+ * Clear all set interrupts at once, ignoring them.
  */
 extern void interrupt_clear_all();
 
