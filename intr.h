@@ -13,6 +13,7 @@ typedef enum _intr_id {
     INTR_RESET, // Soft reboot the system
     INTR_HALT, // Stop execution, quit the program
     INTR_GENF, // General fault, causes reset if can't be dealt with
+    INTR_INS, // Execution encountered an invalid instruction
 
     INTR_NUM_INTRS = 512, // Arbitrary limit
     INTR_INVALID = 512, // Will never be a valid interrupt number

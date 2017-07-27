@@ -8,6 +8,7 @@
 #include "stack.h"
 
 #include <stdbool.h>
+#include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
@@ -35,6 +36,28 @@ typedef struct _cpu_flags {
 } cpu_flags;
 
 static cpu_flags flags;
+
+enum _arg_type {
+    IA_NONE,
+    IA_REG,
+    IA_MEM,
+    IA_CONS,
+};
+
+enum _ins_type {
+	INS_NOP,
+	INS_HALT,
+};
+
+typedef struct _instruction {
+    unsigned args : 3;
+    unsigned more : 5;
+    unsigned arg1 : 2;
+    unsigned arg2 : 2;
+    unsigned arg3 : 2;
+    unsigned arg4 : 2;
+    unsigned type : 16;
+} instruction;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Interface functions
@@ -86,6 +109,27 @@ bool cpu_step()
 			reg_ip = next_ip;
 		}
 	}
+
+    instruction curr;
+    mem_read_word(reg_ip, (uint32_t *)&curr);
+    reg_ip += 4;
+
+    uint8_t additional[curr.more];
+    mem_read_mem(reg_ip, additional, curr.more);
+    reg_ip += curr.more;
+
+    switch (curr.type) {
+		default:
+            interrupt_raise(INTR_INS);
+            break;
+
+		case INS_NOP:
+			break;
+
+		case INS_HALT:
+			flags.halt = true;
+			break;
+    }
 
 	return true;
 }
