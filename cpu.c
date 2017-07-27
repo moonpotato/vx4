@@ -1,11 +1,25 @@
 #include "cpu.h"
 
+#include "error.h"
 #include "mem.h"
+#include "register.h"
 #include "graphics.h"
 #include "intr.h"
 #include "stack.h"
 
 #include <stdbool.h>
+
+////////////////////////////////////////////////////////////////////////////////
+// Internal constants + helper macros
+////////////////////////////////////////////////////////////////////////////////
+
+#define RESET_ON(expr) \
+	do { \
+		if ((expr) != ERR_NOERR) { \
+			flags.reset = true; \
+			return true; \
+		} \
+	} while (0)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Module internal declarations
@@ -38,6 +52,23 @@ bool cpu_step()
         reg_sp = reg_bp = GFX_MMAP_START;
         // Because we have a sensible stack, we can start with interrupts
         flags.intr = true;
+	}
+
+	if (flags.intr) {
+		intr_id next_intr = interrupt_which();
+		if (next_intr != INTR_INVALID) {
+			// Push all our registers
+			// If this fails, cause a reset
+			RESET_ON(stack_enter_frame());
+			// If the stack is aligned correctly here, the following won't fail
+            stack_push(reg_ip);
+            stack_push_multi((uint32_t *)&flags, sizeof (cpu_flags) / 4);
+            stack_skip(REG_NUM_REGS);
+            reg_write_all_mem(reg_sp);
+
+            // Finally, do the jump
+            mem_read_word(next_intr * 4, &reg_ip);
+		}
 	}
 
 	return true;
