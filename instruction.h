@@ -31,6 +31,8 @@ enum _instruction_name {
 	INS_STORR,
 	INS_OUTPR,
 	INS_INRP,
+	INS_CLI,
+	INS_STI,
 
 	INS_NUM_INS
 };

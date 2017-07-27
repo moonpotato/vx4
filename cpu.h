@@ -29,3 +29,8 @@ extern void cpu_queue_halt();
  * Redirects the CPU's execution to a new address for the next cycle.
  */
 extern void cpu_queue_jump(mem_addr new_ip);
+
+/**
+ * Enables/disables interrupts on the CPU.
+ */
+extern void cpu_interrupt_set(bool enabled);

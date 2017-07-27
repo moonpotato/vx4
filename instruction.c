@@ -21,6 +21,8 @@ static error_t instruction_addrc(void *data);
 static error_t instruction_storr(void *data);
 static error_t instruction_outpr(void *data);
 static error_t instruction_inrp(void *data);
+static error_t instruction_cli(void *data);
+static error_t instruction_sti(void *data);
 
 instruction_info instructions[INS_NUM_INS] = {
     {instruction_nop, 0},
@@ -32,6 +34,8 @@ instruction_info instructions[INS_NUM_INS] = {
     {instruction_storr, 2},
     {instruction_outpr, 4},
 	{instruction_inrp, 4},
+	{instruction_cli, 0},
+	{instruction_sti, 0},
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,4 +162,20 @@ error_t instruction_inrp(void *data)
     reg_write_word(*dest, word);
 
     return ERR_NOERR;
+}
+
+error_t instruction_cli(void *data)
+{
+	(void)data;
+	cpu_interrupt_set(false);
+
+	return ERR_NOERR;
+}
+
+error_t instruction_sti(void *data)
+{
+	(void)data;
+	cpu_interrupt_set(true);
+
+	return ERR_NOERR;
 }

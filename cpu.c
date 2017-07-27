@@ -129,7 +129,13 @@ void cpu_queue_halt()
 {
 	flags.halt = true;
 }
+
 void cpu_queue_jump(mem_addr new_ip)
 {
     reg_ip = new_ip;
+}
+
+void cpu_interrupt_set(bool enabled)
+{
+	flags.intr = enabled;
 }
