@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <SDL2/SDL_thread.h>
+#include <SDL2/SDL_mutex.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
@@ -42,6 +43,7 @@ typedef struct _cpu_flags {
 static cpu_flags flags;
 
 static SDL_Thread *cpu_thread;
+static SDL_mutex *flags_mutex;
 static bool do_stopping;
 
 /**
@@ -62,9 +64,15 @@ static int cpu_loop(void *data);
 
 error_t cpu_begin()
 {
+	flags_mutex = SDL_CreateMutex();
+	if (!flags_mutex) {
+        return ERR_EXTERN;
+	}
+
     cpu_thread = SDL_CreateThread(cpu_loop, "cpu", NULL);
 
     if (!cpu_thread) {
+		SDL_DestroyMutex(flags_mutex);
 		return ERR_EXTERN;
     }
 
@@ -74,21 +82,41 @@ error_t cpu_begin()
 void cpu_wait_end()
 {
     SDL_WaitThread(cpu_thread, NULL);
+    SDL_DestroyMutex(flags_mutex);
 }
 
 bool cpu_halting()
 {
-	return do_stopping;
+	if (SDL_LockMutex(flags_mutex) != 0) {
+		return false;
+	}
+
+	bool ret = do_stopping;
+
+	SDL_UnlockMutex(flags_mutex);
+	return ret;
 }
 
 void cpu_queue_reset()
 {
+	if (SDL_LockMutex(flags_mutex) != 0) {
+		return;
+	}
+
 	flags.reset = true;
+
+	SDL_UnlockMutex(flags_mutex);
 }
 
 void cpu_queue_halt()
 {
+	if (SDL_LockMutex(flags_mutex) != 0) {
+		return;
+	}
+
 	flags.halt = true;
+
+	SDL_UnlockMutex(flags_mutex);
 }
 
 void cpu_queue_jump(mem_addr new_ip)
@@ -98,7 +126,13 @@ void cpu_queue_jump(mem_addr new_ip)
 
 void cpu_interrupt_set(bool enabled)
 {
+	if (SDL_LockMutex(flags_mutex) != 0) {
+		return;
+	}
+
 	flags.intr = enabled;
+
+	SDL_UnlockMutex(flags_mutex);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -107,6 +141,10 @@ void cpu_interrupt_set(bool enabled)
 
 bool cpu_step()
 {
+	if (SDL_LockMutex(flags_mutex) != 0) {
+		return true;
+	}
+
 	if (flags.halt) {
 		return false;
 	}
@@ -151,6 +189,8 @@ bool cpu_step()
 			reg_ip = next_ip;
 		}
 	}
+
+	SDL_UnlockMutex(flags_mutex);
 
     instruction_id curr;
     mem_read_dbyte(reg_ip, &curr);
