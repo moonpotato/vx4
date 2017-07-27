@@ -9,20 +9,14 @@
 // Types declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef uint16_t intr_id;
-
-////////////////////////////////////////////////////////////////////////////////
-// Constants + helper macros
-////////////////////////////////////////////////////////////////////////////////
-
-#define INTR_NUM_INTRS 512 // Chosen arbitrarily
-#define INTR_INVALID INTR_NUM_INTRS // Will never be a valid interrupt number
-
-enum _intr_name {
+typedef enum _intr_id {
     INTR_RESET, // Soft reboot the system
     INTR_HALT, // Stop execution, quit the program
     INTR_GENF, // General fault, causes reset if can't be dealt with
-};
+
+    INTR_NUM_INTRS = 512, // Arbitrary limit
+    INTR_INVALID = 512, // Will never be a valid interrupt number
+} intr_id;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function declarations
