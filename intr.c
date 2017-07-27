@@ -26,9 +26,7 @@
 // Module internal declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Each interrupt being raised or not is represented as a single bit.
- */
+// Each interrupt being raised or not is represented as a single bit.
 static unsigned intr_buffer[INTR_BUFFER_SIZE];
 
 ////////////////////////////////////////////////////////////////////////////////
