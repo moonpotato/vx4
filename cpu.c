@@ -1,5 +1,7 @@
 #include "cpu.h"
 
+#include "mem.h"
+#include "graphics.h"
 #include "intr.h"
 
 #include <stdbool.h>
@@ -8,8 +10,14 @@
 // Module internal declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool do_reset;
-static bool do_halt;
+static mem_addr ip; // Instruction pointer
+static mem_addr sp; // Stack pointer
+static mem_addr bp; // Base pointer
+
+struct _cpu_flags {
+	bool reset : 1;
+	bool halt : 1;
+} flags;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Interface functions
@@ -17,21 +25,15 @@ static bool do_halt;
 
 bool cpu_step()
 {
-	// The following line is stopgap, will be handled in firmware
-    if (interrupt_which() == INTR_HALT) { cpu_queue_halt(); }
-
-	if (do_halt) {
-		do_halt = false;
-
+	if (flags.halt) {
 		return false;
 	}
 
-	if (do_reset) {
-		do_reset = false;
-
-        interrupt_clear_all();
-        interrupt_enable();
-        interrupt_raise(INTR_RESET);
+	if (flags.reset) {
+		flags.reset = false;
+        mem_read_word(0x0, &ip); // The reset vector is in place of the 0th IV
+        // Sensible values for sp and bp, remembering they grow down
+        sp = bp = GFX_MMAP_START;
 	}
 
 	return true;
@@ -39,10 +41,10 @@ bool cpu_step()
 
 void cpu_queue_reset()
 {
-	do_reset = true;
+	flags.reset = true;
 }
 
 void cpu_queue_halt()
 {
-	do_halt = true;
+	flags.halt = true;
 }
