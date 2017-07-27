@@ -24,6 +24,8 @@ enum _reg_id {
 	REG_NUM_REGS
 };
 
+#define IS_VALID_REGISTER(reg) ((reg) < REG_NUM_REGS)
+
 /**
  * Each register is divided as follows:
  *
