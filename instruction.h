@@ -25,6 +25,9 @@ enum _instruction_name {
 	INS_NOP,
 	INS_HLT,
 	INS_JMPC,
+	INS_MOVRC,
+	INS_MOVMR,
+	INS_ADDRC,
 
 	INS_NUM_INS
 };
