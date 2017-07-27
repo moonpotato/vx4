@@ -7,6 +7,7 @@
 #include "cpu.h"
 
 #include <stdint.h>
+#include <stdbool.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Module internal declarations
@@ -24,7 +25,7 @@ static error_t instruction_inrp(void *data);
 static error_t instruction_cli(void *data);
 static error_t instruction_sti(void *data);
 
-instruction_info instructions[INS_NUM_INS] = {
+instruction_info instructions[] = {
     {instruction_nop, 0},
     {instruction_hlt, 0},
     {instruction_jmpc, 4},
@@ -37,6 +38,18 @@ instruction_info instructions[INS_NUM_INS] = {
 	{instruction_cli, 0},
 	{instruction_sti, 0},
 };
+
+#define INS_NUM_INS (sizeof (instructions) / sizeof (instruction_info))
+#define IS_VALID_INSTRUCTION(id) ((id) < INS_NUM_INS)
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface functions
+////////////////////////////////////////////////////////////////////////////////
+
+bool valid_instruction(instruction_id ins)
+{
+	return IS_VALID_INSTRUCTION(ins);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Module internal functions

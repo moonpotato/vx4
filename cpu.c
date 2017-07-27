@@ -202,7 +202,7 @@ bool cpu_step()
     mem_read_dbyte(reg_ip, &curr);
     reg_ip += 2;
 
-    if (!IS_VALID_INSTRUCTION(curr)) {
+    if (!valid_instruction(curr)) {
         interrupt_raise(INTR_INS);
         return true;
     }
