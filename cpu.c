@@ -88,11 +88,11 @@ bool cpu_step()
 
 			// Neither 0 nor 1 are sensible IVs (they are both inside the IVT)
             // So we use them as a signal to reset (0) or halt (1) instead
-            if (reg_ip == 0) {
+            if (next_ip == 0) {
 				flags.reset = true;
 				return true;
             }
-            else if (reg_ip == 1) {
+            else if (next_ip == 1) {
 				flags.halt = true;
 				return true;
             }
