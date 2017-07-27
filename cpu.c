@@ -57,6 +57,21 @@ bool cpu_step()
 	if (flags.intr) {
 		intr_id next_intr = interrupt_which();
 		if (next_intr != INTR_INVALID) {
+			// Fetch our interrupt vector (IV)
+            mem_addr next_ip;
+			mem_read_word(next_intr * 4, &next_ip);
+
+			// Neither 0 nor 1 are sensible IVs (they are both inside the IVT)
+            // So we use them as a signal to reset (0) or halt (1) instead
+            if (reg_ip == 0) {
+				flags.reset = true;
+				return true;
+            }
+            else if (reg_ip == 1) {
+				flags.halt = true;
+				return true;
+            }
+
 			// Push all our registers
 			// If this fails, cause a reset
 			RESET_ON(stack_enter_frame());
@@ -67,7 +82,7 @@ bool cpu_step()
             reg_write_all_mem(reg_sp);
 
             // Finally, do the jump
-            mem_read_word(next_intr * 4, &reg_ip);
+			reg_ip = next_ip;
 		}
 	}
 
