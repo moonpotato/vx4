@@ -17,7 +17,8 @@ typedef uint32_t kbd_scancode;
 /**
  * Registers the keyboard handler on the next available port.
  *
- * Returns: Any errors occurring during a call to port_insert.
+ * Returns: Any errors occurring during a call to port_insert, or
+ * ERR_EXTERN: There was an error creating the keyboard mutex.
  */
 extern error_t install_keyboard_handler();
 

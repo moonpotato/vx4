@@ -32,6 +32,20 @@ enum _intr_name {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Initializes state required for using interrupts.
+ *
+ * Returns:
+ * ERR_NOERR: Initialization completed successfully.
+ * ERR_EXTERN: Some problem occurred in creating the resources.
+ */
+extern error_t begin_interrupts();
+
+/**
+ * Cleans up resources used by this module.
+ */
+extern void end_interrupts();
+
+/**
  * Raise or clear a specific interrupt.
  *
  * IN which: The interrupt to raise/clear.
@@ -39,6 +53,7 @@ enum _intr_name {
  * Returns:
  * ERR_NOERR: The operation completed successfully.
  * ERR_INVAL: The interrupt specified was not a valid interrupt number.
+ * ERR_EXTERN: An error occurred acquiring the mutex.
  */
 extern error_t interrupt_raise(intr_id which);
 extern error_t interrupt_clear(intr_id which);

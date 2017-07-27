@@ -2,6 +2,7 @@
 
 #include "error.h"
 
+#include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <string.h>
@@ -11,6 +12,8 @@
 #else
 #include <strings.h> // ffs(3) is in this header on modern POSIX systems
 #endif // __MINGW32__
+
+#include <SDL2/SDL_mutex.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal constants + helper macros
@@ -29,9 +32,27 @@
 // Each interrupt being raised or not is represented as a single bit.
 static unsigned intr_buffer[INTR_BUFFER_SIZE];
 
+static SDL_mutex *intr_mutex;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Interface functions
 ////////////////////////////////////////////////////////////////////////////////
+
+error_t begin_interrupts()
+{
+	intr_mutex = SDL_CreateMutex();
+	if (!intr_mutex) {
+		return ERR_EXTERN;
+	}
+
+	return ERR_NOERR;
+}
+
+void end_interrupts()
+{
+	SDL_DestroyMutex(intr_mutex);
+	intr_mutex = NULL;
+}
 
 /*
  * For anyone unclear on bitwise techniques, x |= 1 << y sets the yth bit of
@@ -45,7 +66,13 @@ error_t interrupt_raise(intr_id which)
 		return ERR_INVAL;
 	}
 
+	if (SDL_LockMutex(intr_mutex) != 0) {
+		return ERR_EXTERN;
+	}
+
 	intr_buffer[which / INTRS_IN_ELEM] |= 1u << (which % INTRS_IN_ELEM);
+
+	SDL_UnlockMutex(intr_mutex);
 	return ERR_NOERR;
 }
 
@@ -55,17 +82,34 @@ error_t interrupt_clear(intr_id which)
 		return ERR_INVAL;
 	}
 
+	if (SDL_LockMutex(intr_mutex) != 0) {
+		return ERR_EXTERN;
+	}
+
 	intr_buffer[which / INTRS_IN_ELEM] &= ~(1u << (which % INTRS_IN_ELEM));
+
+	SDL_UnlockMutex(intr_mutex);
 	return ERR_NOERR;
 }
 
 void interrupt_clear_all()
 {
+	if (SDL_LockMutex(intr_mutex) != 0) {
+		return;
+	}
+
 	memset(intr_buffer, 0, INTR_BUFFER_SIZE * sizeof (unsigned));
+
+	SDL_UnlockMutex(intr_mutex);
 }
 
 intr_id interrupt_which()
 {
+	if (SDL_LockMutex(intr_mutex) != 0) {
+		return INTR_INVALID;
+	}
+
+	intr_id ret = INTR_INVALID;
     for (size_t i = 0; i < INTR_BUFFER_SIZE; ++i) {
 		int pos //...
 		#ifdef __MINGW32__
@@ -79,9 +123,10 @@ intr_id interrupt_which()
         if (pos != -1) {
 			// We clear the interrupt first so it doesn't fire infinitely
             intr_buffer[i] &= ~(1u << pos);
-            return (i * INTRS_IN_ELEM) + pos;
+            ret = (i * INTRS_IN_ELEM) + pos;
         }
     }
 
-    return INTR_INVALID;
+    SDL_UnlockMutex(intr_mutex);
+    return ret;
 }
