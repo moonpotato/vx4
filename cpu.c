@@ -3,6 +3,7 @@
 #include "mem.h"
 #include "graphics.h"
 #include "intr.h"
+#include "stack.h"
 
 #include <stdbool.h>
 
@@ -10,15 +11,15 @@
 // Module internal declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-static mem_addr ip; // Instruction pointer
-static mem_addr sp; // Stack pointer
-static mem_addr bp; // Base pointer
+static mem_addr reg_ip; // Instruction pointer
 
-struct _cpu_flags {
+typedef struct _cpu_flags {
 	bool reset : 1;
 	bool halt : 1;
 	bool intr : 1; // Are interrupts enabled?
-} flags;
+} cpu_flags;
+
+static cpu_flags flags;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Interface functions
@@ -32,9 +33,9 @@ bool cpu_step()
 
 	if (flags.reset) {
 		flags.reset = false;
-        mem_read_word(0x0, &ip); // The reset vector is in place of the 0th IV
+        mem_read_word(0x0, &reg_ip); // The reset vector is in place of the 0th IV
         // Sensible values for sp and bp, remembering they grow down
-        sp = bp = GFX_MMAP_START;
+        reg_sp = reg_bp = GFX_MMAP_START;
         // Because we have a sensible stack, we can start with interrupts
         flags.intr = true;
 	}
