@@ -71,7 +71,7 @@ extern error_t mem_write_word(mem_addr base, uint32_t val);
  *
  * Returns: The number of bytes read.
  */
-extern uint32_t mem_read_string(mem_addr base, char *dest, mem_size max);
+extern mem_size mem_read_string(mem_addr base, char *dest, mem_size max);
 
 /**
  * Reads from a set span of memory into a buffer.
@@ -82,7 +82,7 @@ extern uint32_t mem_read_string(mem_addr base, char *dest, mem_size max);
  *
  * Returns: The number of bytes read. A value != num indicates error.
  */
-extern uint32_t mem_read_mem(mem_addr base, void *dest, mem_size num);
+extern mem_size mem_read_mem(mem_addr base, void *dest, mem_size num);
 
 /**
  * Writes a null-terminated string into memory, including the
@@ -93,7 +93,7 @@ extern uint32_t mem_read_mem(mem_addr base, void *dest, mem_size num);
  *
  * Returns: The number of bytes written.
  */
-extern uint32_t mem_write_string(mem_addr base, const char *src);
+extern mem_size mem_write_string(mem_addr base, const char *src);
 
 /**
  * Writes from a given buffer into memory at a specific location.
@@ -104,7 +104,7 @@ extern uint32_t mem_write_string(mem_addr base, const char *src);
  *
  * Returns: The number of bytes written. A value != num indicates error.
  */
-extern uint32_t mem_write_mem(mem_addr base, const void *src, mem_size num);
+extern mem_size mem_write_mem(mem_addr base, const void *src, mem_size num);
 
 /**
  * Fills a size-aligned block of memory with a given value.

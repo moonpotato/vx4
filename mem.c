@@ -183,7 +183,7 @@ error_t mem_write_word(mem_addr base, uint32_t val)
 	return ERR_NOERR;
 }
 
-uint32_t mem_read_string(mem_addr base, char *dest, mem_size max)
+mem_size mem_read_string(mem_addr base, char *dest, mem_size max)
 {
 	uint8_t *udest = (uint8_t *)dest;
 	mem_size read = 0;
@@ -206,7 +206,7 @@ uint32_t mem_read_string(mem_addr base, char *dest, mem_size max)
 	return read;
 }
 
-uint32_t mem_read_mem(mem_addr base, void *dest, mem_size num)
+mem_size mem_read_mem(mem_addr base, void *dest, mem_size num)
 {
 	uint8_t *udest = (uint8_t *)dest;
 	mem_size read = 0;
@@ -224,7 +224,7 @@ uint32_t mem_read_mem(mem_addr base, void *dest, mem_size num)
 	return read;
 }
 
-uint32_t mem_write_string(mem_addr base, const char *src)
+mem_size mem_write_string(mem_addr base, const char *src)
 {
 	const uint8_t *usrc = (uint8_t *)src;
 	mem_size written = 0;
@@ -242,7 +242,7 @@ uint32_t mem_write_string(mem_addr base, const char *src)
 	return written;
 }
 
-uint32_t mem_write_mem(mem_addr base, const void *src, mem_size num)
+mem_size mem_write_mem(mem_addr base, const void *src, mem_size num)
 {
 	const uint8_t *usrc = (uint8_t *)src;
 	mem_size written = 0;

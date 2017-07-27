@@ -1,6 +1,7 @@
 #pragma once
 
 #include "error.h"
+#include "mem.h"
 
 #include <stdint.h>
 
@@ -69,3 +70,16 @@ extern error_t reg_write_high_byte(reg_name which, uint8_t val);
 extern error_t reg_write_low_dbyte(reg_name which, uint16_t val);
 extern error_t reg_write_high_dbyte(reg_name which, uint16_t val);
 extern error_t reg_write_word(reg_name which, uint32_t val);
+
+/**
+ * Causes all the register values to be read from/written to memory beginning
+ * at a specified address.
+ *
+ * IN start: The memory address to begin writing.
+ *
+ * Returns:
+ * ERR_NOERR: Writing/reading completed successfully.
+ * ERR_EXTERN: All of the registers couldn't be written/read.
+ */
+extern error_t reg_write_all_mem(mem_addr start);
+extern error_t reg_read_all_mem(mem_addr start);

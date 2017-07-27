@@ -1,6 +1,7 @@
 #include "register.h"
 
 #include "error.h"
+#include "mem.h"
 
 #include <stdint.h>
 
@@ -148,3 +149,24 @@ error_t reg_write_word(reg_name which, uint32_t val)
 	return ERR_NOERR;
 }
 
+error_t reg_write_all_mem(mem_addr start)
+{
+    static const mem_size reg_sz = 4u * REG_NUM_REGS;
+
+	if (mem_write_mem(start, registers, reg_sz) != reg_sz) {
+        return ERR_EXTERN;
+	}
+
+	return ERR_NOERR;
+}
+
+error_t reg_read_all_mem(mem_addr start)
+{
+	static const mem_size reg_sz = 4u * REG_NUM_REGS;
+
+	if (mem_read_mem(start, registers, reg_sz) != reg_sz) {
+		return ERR_EXTERN;
+	}
+
+	return ERR_NOERR;
+}
