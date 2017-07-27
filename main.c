@@ -54,6 +54,8 @@ int main(int argc, char *argv[])
 		graphics_render();
 	}
 
+	// The CPU has told us it will be stopping
+	// So wait for it to do so completely
 	cpu_wait_end();
 
 	// Clean up now, in reverse order
