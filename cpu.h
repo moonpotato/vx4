@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mem.h"
+
 #include <stdbool.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,3 +24,8 @@ extern void cpu_queue_reset();
  * Set the CPU for immediate (non-interrupt-based) halt next step.
  */
 extern void cpu_queue_halt();
+
+/**
+ * Redirects the CPU's execution to a new address for the next cycle.
+ */
+extern void cpu_queue_jump(mem_addr new_ip);

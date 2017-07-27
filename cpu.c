@@ -6,7 +6,9 @@
 #include "graphics.h"
 #include "intr.h"
 #include "stack.h"
+#include "instruction.h"
 
+#include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -36,29 +38,6 @@ typedef struct _cpu_flags {
 } cpu_flags;
 
 static cpu_flags flags;
-
-enum _arg_type {
-    IA_NONE,
-    IA_REG,
-    IA_MEM,
-    IA_CONS,
-};
-
-enum _ins_type {
-	INS_NOP,
-	INS_HALT,
-	INS_JMP,
-};
-
-typedef struct _instruction {
-    unsigned args : 3;
-    unsigned more : 5;
-    unsigned arg1 : 2;
-    unsigned arg2 : 2;
-    unsigned arg3 : 2;
-    unsigned arg4 : 2;
-    unsigned type : 16;
-} instruction;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Interface functions
@@ -111,36 +90,31 @@ bool cpu_step()
 		}
 	}
 
-    instruction curr;
-    mem_read_word(reg_ip, (uint32_t *)&curr);
-    reg_ip += 4;
+    instruction_id curr;
+    mem_read_dbyte(reg_ip, &curr);
+    reg_ip += 2;
 
-    uint8_t additional[curr.more];
-    mem_read_mem(reg_ip, additional, curr.more);
-    reg_ip += curr.more;
+    if (!IS_VALID_INSTRUCTION(curr)) {
+        interrupt_raise(INTR_INS);
+        return true;
+    }
 
-    switch (curr.type) {
-		default:
-            interrupt_raise(INTR_INS);
-            break;
+    mem_size extra = instructions[curr].extra;
+    error_t stat;
 
-		case INS_NOP:
-			break;
+    if (extra > 0) {
+		uint8_t data[extra];
+		mem_read_mem(reg_ip, data, extra);
+		reg_ip += extra;
 
-		case INS_HALT:
-			flags.halt = true;
-			break;
+		stat = (instructions[curr].func)(data);
+    }
+    else {
+		stat = (instructions[curr].func)(NULL);
+    }
 
-		case INS_JMP:
-			if (curr.more == 4) {
-                if (curr.arg1 == IA_CONS) {
-                    reg_ip = *(mem_addr *)&additional;
-                }
-			}
-			else {
-				interrupt_raise(INTR_INS);
-			}
-
+    if (stat != ERR_NOERR) {
+        interrupt_raise(INTR_INS);
     }
 
 	return true;
@@ -154,4 +128,8 @@ void cpu_queue_reset()
 void cpu_queue_halt()
 {
 	flags.halt = true;
+}
+void cpu_queue_jump(mem_addr new_ip)
+{
+    reg_ip = new_ip;
 }
