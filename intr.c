@@ -72,6 +72,11 @@ void interrupt_enable()
 	disabled = false;
 }
 
+bool interrupt_is_enabled()
+{
+	return !disabled;
+}
+
 void interrupt_clear_all()
 {
 	memset(intr_buffer, 0, INTR_BUFFER_SIZE * sizeof (unsigned));

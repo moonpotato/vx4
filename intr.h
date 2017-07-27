@@ -3,6 +3,7 @@
 #include "error.h"
 
 #include <stdint.h>
+#include <stdbool.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Types declarations
@@ -46,6 +47,13 @@ extern error_t interrupt_clear(intr_id which);
  */
 extern void interrupt_disable();
 extern void interrupt_enable();
+
+/**
+ * Get whether interrupts are currently being delivered.
+ *
+ * Returns: true iff interrupts are currently enabled, false otherwise.
+ */
+extern bool interrupt_is_enabled();
 
 /**
  * Clear all set interrupts at once, ignoring them. Might be used immediately
