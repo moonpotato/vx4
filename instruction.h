@@ -23,7 +23,7 @@ typedef struct _instruction_info {
 
 enum _instruction_name {
 	INS_NOP,
-	INS_HALT,
+	INS_HLT,
 	INS_JMPC,
 
 	INS_NUM_INS

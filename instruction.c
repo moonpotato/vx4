@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 static error_t instruction_nop(void *data);
-static error_t instruction_halt(void *data);
+static error_t instruction_hlt(void *data);
 static error_t instruction_jmpc(void *data);
 
 instruction_info instructions[INS_NUM_INS] = {
@@ -27,7 +27,7 @@ static error_t instruction_nop(void *data)
 	return ERR_NOERR;
 }
 
-static error_t instruction_halt(void *data)
+static error_t instruction_hlt(void *data)
 {
 	(void)data;
 
