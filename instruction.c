@@ -38,13 +38,13 @@ instruction_info instructions[INS_NUM_INS] = {
 // Module internal functions
 ////////////////////////////////////////////////////////////////////////////////
 
-static error_t instruction_nop(void *data)
+error_t instruction_nop(void *data)
 {
 	(void)data;
 	return ERR_NOERR;
 }
 
-static error_t instruction_hlt(void *data)
+error_t instruction_hlt(void *data)
 {
 	(void)data;
 
@@ -52,13 +52,13 @@ static error_t instruction_hlt(void *data)
 	return ERR_NOERR;
 }
 
-static error_t instruction_jmpc(void *data)
+error_t instruction_jmpc(void *data)
 {
 	cpu_queue_jump(*(mem_addr *)data);
 	return ERR_NOERR;
 }
 
-static error_t instruction_movrc(void *data)
+error_t instruction_movrc(void *data)
 {
 	reg_id *dest = (reg_id *)data;
     uint32_t *src = (uint32_t *)(dest + 1);
@@ -71,7 +71,7 @@ static error_t instruction_movrc(void *data)
     return ERR_NOERR;
 }
 
-static error_t instruction_movmr(void *data)
+error_t instruction_movmr(void *data)
 {
 	mem_addr *dest = (mem_addr *)data;
 	reg_id *src = (reg_id *)(dest + 1);
@@ -85,7 +85,7 @@ static error_t instruction_movmr(void *data)
     return mem_write_word(*dest, word);
 }
 
-static error_t instruction_addrc(void *data)
+error_t instruction_addrc(void *data)
 {
 	reg_id *dest = (reg_id *)data;
     uint32_t *src = (uint32_t *)(dest + 1);
@@ -102,7 +102,7 @@ static error_t instruction_addrc(void *data)
     return ERR_NOERR;
 }
 
-static error_t instruction_storr(void *data)
+error_t instruction_storr(void *data)
 {
 	reg_id *dest = (reg_id *)data;
 	reg_id *src = (reg_id *)(dest + 1);
@@ -122,7 +122,7 @@ static error_t instruction_storr(void *data)
     return mem_write_word(where, word);
 }
 
-static error_t instruction_outpr(void *data)
+error_t instruction_outpr(void *data)
 {
 	port_id *dest = (port_id *)data;
 	reg_id *src = (reg_id *)(dest + 1);
@@ -141,7 +141,7 @@ static error_t instruction_outpr(void *data)
     return ERR_NOERR;
 }
 
-static error_t instruction_inrp(void *data)
+error_t instruction_inrp(void *data)
 {
 	reg_id *dest = (reg_id *)data;
 	port_id *src = (port_id *)(dest + 1);
