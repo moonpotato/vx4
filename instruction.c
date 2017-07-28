@@ -17,11 +17,11 @@ static error_t instruction_nop(void *data);
 static error_t instruction_hlt(void *data);
 static error_t instruction_jmpc(void *data);
 static error_t instruction_movrc(void *data);
-static error_t instruction_movmr(void *data);
+static error_t instruction_movpcr(void *data);
 static error_t instruction_addrc(void *data);
-static error_t instruction_storr(void *data);
-static error_t instruction_outpr(void *data);
-static error_t instruction_inrp(void *data);
+static error_t instruction_movprr(void *data);
+static error_t instruction_outscr(void *data);
+static error_t instruction_inxrsc(void *data);
 static error_t instruction_cli(void *data);
 static error_t instruction_sti(void *data);
 
@@ -30,11 +30,11 @@ instruction_info instructions[] = {
     {instruction_hlt, 0},
     {instruction_jmpc, 4},
     {instruction_movrc, 6},
-    {instruction_movmr, 6},
+    {instruction_movpcr, 6},
     {instruction_addrc, 6},
-    {instruction_storr, 2},
-    {instruction_outpr, 4},
-	{instruction_inrp, 4},
+    {instruction_movprr, 2},
+    {instruction_outscr, 4},
+	{instruction_inxrsc, 4},
 	{instruction_cli, 0},
 	{instruction_sti, 0},
 };
@@ -88,7 +88,7 @@ error_t instruction_movrc(void *data)
     return ERR_NOERR;
 }
 
-error_t instruction_movmr(void *data)
+error_t instruction_movpcr(void *data)
 {
 	mem_addr *dest = (mem_addr *)data;
 	reg_id *src = (reg_id *)(dest + 1);
@@ -119,7 +119,7 @@ error_t instruction_addrc(void *data)
     return ERR_NOERR;
 }
 
-error_t instruction_storr(void *data)
+error_t instruction_movprr(void *data)
 {
 	reg_id *dest = (reg_id *)data;
 	reg_id *src = (reg_id *)(dest + 1);
@@ -139,7 +139,7 @@ error_t instruction_storr(void *data)
     return mem_write_word(where, word);
 }
 
-error_t instruction_outpr(void *data)
+error_t instruction_outscr(void *data)
 {
 	port_id *dest = (port_id *)data;
 	reg_id *src = (reg_id *)(dest + 1);
@@ -158,7 +158,7 @@ error_t instruction_outpr(void *data)
     return ERR_NOERR;
 }
 
-error_t instruction_inrp(void *data)
+error_t instruction_inxrsc(void *data)
 {
 	reg_id *dest = (reg_id *)data;
 	port_id *src = (port_id *)(dest + 1);
