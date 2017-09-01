@@ -40,18 +40,18 @@ static SDL_mutex *intr_mutex;
 
 error_t begin_interrupts()
 {
-	intr_mutex = SDL_CreateMutex();
-	if (!intr_mutex) {
-		return ERR_EXTERN;
-	}
+    intr_mutex = SDL_CreateMutex();
+    if (!intr_mutex) {
+        return ERR_EXTERN;
+    }
 
-	return ERR_NOERR;
+    return ERR_NOERR;
 }
 
 void end_interrupts()
 {
-	SDL_DestroyMutex(intr_mutex);
-	intr_mutex = NULL;
+    SDL_DestroyMutex(intr_mutex);
+    intr_mutex = NULL;
 }
 
 /*
@@ -62,66 +62,66 @@ void end_interrupts()
 
 error_t interrupt_raise(intr_id which)
 {
-	if (!IS_VALID_INTR(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_INTR(which)) {
+        return ERR_INVAL;
+    }
 
-	if (SDL_LockMutex(intr_mutex) != 0) {
-		return ERR_EXTERN;
-	}
+    if (SDL_LockMutex(intr_mutex) != 0) {
+        return ERR_EXTERN;
+    }
 
-	intr_buffer[which / INTRS_IN_ELEM] |= 1u << (which % INTRS_IN_ELEM);
+    intr_buffer[which / INTRS_IN_ELEM] |= 1u << (which % INTRS_IN_ELEM);
 
-	SDL_UnlockMutex(intr_mutex);
-	return ERR_NOERR;
+    SDL_UnlockMutex(intr_mutex);
+    return ERR_NOERR;
 }
 
 error_t interrupt_clear(intr_id which)
 {
-	if (!IS_VALID_INTR(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_INTR(which)) {
+        return ERR_INVAL;
+    }
 
-	if (SDL_LockMutex(intr_mutex) != 0) {
-		return ERR_EXTERN;
-	}
+    if (SDL_LockMutex(intr_mutex) != 0) {
+        return ERR_EXTERN;
+    }
 
-	intr_buffer[which / INTRS_IN_ELEM] &= ~(1u << (which % INTRS_IN_ELEM));
+    intr_buffer[which / INTRS_IN_ELEM] &= ~(1u << (which % INTRS_IN_ELEM));
 
-	SDL_UnlockMutex(intr_mutex);
-	return ERR_NOERR;
+    SDL_UnlockMutex(intr_mutex);
+    return ERR_NOERR;
 }
 
 void interrupt_clear_all()
 {
-	if (SDL_LockMutex(intr_mutex) != 0) {
-		return;
-	}
+    if (SDL_LockMutex(intr_mutex) != 0) {
+        return;
+    }
 
-	memset(intr_buffer, 0, INTR_BUFFER_SIZE * sizeof (unsigned));
+    memset(intr_buffer, 0, INTR_BUFFER_SIZE * sizeof (unsigned));
 
-	SDL_UnlockMutex(intr_mutex);
+    SDL_UnlockMutex(intr_mutex);
 }
 
 intr_id interrupt_which()
 {
-	if (SDL_LockMutex(intr_mutex) != 0) {
-		return INTR_INVALID;
-	}
+    if (SDL_LockMutex(intr_mutex) != 0) {
+        return INTR_INVALID;
+    }
 
-	intr_id ret = INTR_INVALID;
+    intr_id ret = INTR_INVALID;
     for (size_t i = 0; i < INTR_BUFFER_SIZE; ++i) {
-		int pos //...
-		#ifdef __MINGW32__
+        int pos //...
+        #ifdef __MINGW32__
             = ffs_shim(intr_buffer[i]);
         #else
         // ffs(3) (Find First Set) returns a 1-based index and 0 for none
-		// We have to correct for that
+        // We have to correct for that
             = ffs(intr_buffer[i]) - 1;
         #endif // __MINGW32__
 
         if (pos != -1) {
-			// We clear the interrupt first so it doesn't fire infinitely
+            // We clear the interrupt first so it doesn't fire infinitely
             intr_buffer[i] &= ~(1u << pos);
             ret = (i * INTRS_IN_ELEM) + pos;
         }

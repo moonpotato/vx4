@@ -28,138 +28,138 @@ static uint32_t registers[REG_NUM_REGS];
 
 error_t reg_read_low_byte(reg_id which, uint8_t *dest)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	uint8_t *reg = (uint8_t *)&registers[which];
+    uint8_t *reg = (uint8_t *)&registers[which];
 
-	*dest = reg[0];
-	return ERR_NOERR;
+    *dest = reg[0];
+    return ERR_NOERR;
 }
 
 error_t reg_read_high_byte(reg_id which, uint8_t *dest)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	uint8_t *reg = (uint8_t *)&registers[which];
+    uint8_t *reg = (uint8_t *)&registers[which];
 
-	*dest = reg[1];
-	return ERR_NOERR;
+    *dest = reg[1];
+    return ERR_NOERR;
 }
 
 error_t reg_read_low_dbyte(reg_id which, uint16_t *dest)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	uint16_t *reg = (uint16_t *)&registers[which];
+    uint16_t *reg = (uint16_t *)&registers[which];
 
-	*dest = reg[0];
-	return ERR_NOERR;
+    *dest = reg[0];
+    return ERR_NOERR;
 }
 
 error_t reg_read_high_dbyte(reg_id which, uint16_t *dest)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	uint16_t *reg = (uint16_t *)&registers[which];
+    uint16_t *reg = (uint16_t *)&registers[which];
 
-	*dest = reg[1];
-	return ERR_NOERR;
+    *dest = reg[1];
+    return ERR_NOERR;
 }
 
 error_t reg_read_word(reg_id which, uint32_t *dest)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	*dest = registers[which];
-	return ERR_NOERR;
+    *dest = registers[which];
+    return ERR_NOERR;
 }
 
 error_t reg_write_low_byte(reg_id which, uint8_t val)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	uint8_t *reg = (uint8_t *)&registers[which];
+    uint8_t *reg = (uint8_t *)&registers[which];
 
-	reg[0] = val;
-	return ERR_NOERR;
+    reg[0] = val;
+    return ERR_NOERR;
 }
 
 error_t reg_write_high_byte(reg_id which, uint8_t val)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	uint8_t *reg = (uint8_t *)&registers[which];
+    uint8_t *reg = (uint8_t *)&registers[which];
 
-	reg[1] = val;
-	return ERR_NOERR;
+    reg[1] = val;
+    return ERR_NOERR;
 }
 
 error_t reg_write_low_dbyte(reg_id which, uint16_t val)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	uint16_t *reg = (uint16_t *)&registers[which];
+    uint16_t *reg = (uint16_t *)&registers[which];
 
-	reg[0] = val;
-	return ERR_NOERR;
+    reg[0] = val;
+    return ERR_NOERR;
 }
 
 error_t reg_write_high_dbyte(reg_id which, uint16_t val)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	uint16_t *reg = (uint16_t *)&registers[which];
+    uint16_t *reg = (uint16_t *)&registers[which];
 
-	reg[1] = val;
-	return ERR_NOERR;
+    reg[1] = val;
+    return ERR_NOERR;
 }
 
 error_t reg_write_word(reg_id which, uint32_t val)
 {
-	if (!IS_VALID_REGISTER(which)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(which)) {
+        return ERR_INVAL;
+    }
 
-	registers[which] = val;
-	return ERR_NOERR;
+    registers[which] = val;
+    return ERR_NOERR;
 }
 
 error_t reg_write_all_mem(mem_addr start)
 {
     static const mem_size reg_sz = 4u * REG_NUM_REGS;
 
-	if (mem_write_mem(start, registers, reg_sz) != reg_sz) {
+    if (mem_write_mem(start, registers, reg_sz) != reg_sz) {
         return ERR_EXTERN;
-	}
+    }
 
-	return ERR_NOERR;
+    return ERR_NOERR;
 }
 
 error_t reg_read_all_mem(mem_addr start)
 {
-	static const mem_size reg_sz = 4u * REG_NUM_REGS;
+    static const mem_size reg_sz = 4u * REG_NUM_REGS;
 
-	if (mem_read_mem(start, registers, reg_sz) != reg_sz) {
-		return ERR_EXTERN;
-	}
+    if (mem_read_mem(start, registers, reg_sz) != reg_sz) {
+        return ERR_EXTERN;
+    }
 
-	return ERR_NOERR;
+    return ERR_NOERR;
 }

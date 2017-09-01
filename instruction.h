@@ -14,8 +14,8 @@ typedef uint16_t instruction_id;
 typedef error_t (*instruction_pf)(void *);
 
 typedef struct _instruction_info {
-	instruction_pf func;
-	mem_size extra; // How large (minus the leading 2 bytes) is the instruction?
+    instruction_pf func;
+    mem_size extra; // How large (minus the leading 2 bytes) is the instruction?
 } instruction_info;
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -20,18 +20,18 @@ typedef uint16_t disk_id;
 #define DISK_MMAP_START (MEM_BLK_SIZE * (MEM_NUM_BLKS - DISK_MAX_DISKS))
 
 typedef enum _disk_action {
-	DA_NONE, // No action to perform
-	DA_NUM, // Get the associated disk number
-	DA_SEEK, // Get/set the offset of the memory map in the file
-	DA_SYNC, // Cause the disk buffer to be written to the backing file
-	DA_ADDR, // Get the base address of the disk buffer
-	DA_BUFSZ, // Get the size (in bytes) of the disk buffer
+    DA_NONE, // No action to perform
+    DA_NUM, // Get the associated disk number
+    DA_SEEK, // Get/set the offset of the memory map in the file
+    DA_SYNC, // Cause the disk buffer to be written to the backing file
+    DA_ADDR, // Get the base address of the disk buffer
+    DA_BUFSZ, // Get the size (in bytes) of the disk buffer
 } disk_action;
 
 typedef enum _disk_state {
-	DS_OK,
-	DS_WAIT,
-	DS_ERROR,
+    DS_OK,
+    DS_WAIT,
+    DS_ERROR,
 } disk_state;
 
 ////////////////////////////////////////////////////////////////////////////////

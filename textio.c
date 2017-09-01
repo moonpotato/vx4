@@ -26,9 +26,9 @@ static void console_write(port_id num, uint32_t c);
 static uint32_t console_read(port_id num);
 
 static port_entry text_port = {
-	"Generic serial I/O",
-	console_write, // Port writes go to console
-	console_read // Port reads come from console
+    "Generic serial I/O",
+    console_write, // Port writes go to console
+    console_read // Port reads come from console
 };
 
 // We need a place to store the port number we are assigned
@@ -40,16 +40,16 @@ static port_id assigned_port;
 
 error_t install_textio_handler()
 {
-	// We want to see any results immediately
-	setvbuf(stdin, NULL, _IONBF, 0);
-	setvbuf(stdout, NULL, _IONBF, 0);
+    // We want to see any results immediately
+    setvbuf(stdin, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
 
-	return port_install(&text_port, &assigned_port);
+    return port_install(&text_port, &assigned_port);
 }
 
 error_t remove_textio_handler()
 {
-	return port_remove(assigned_port);
+    return port_remove(assigned_port);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,21 +58,21 @@ error_t remove_textio_handler()
 
 void console_write(port_id num, uint32_t c)
 {
-	(void)num;
+    (void)num;
 
-	putchar((unsigned char)c);
+    putchar((unsigned char)c);
 }
 
 uint32_t console_read(port_id num)
 {
-	(void)num;
+    (void)num;
 
-	int c = getchar();
+    int c = getchar();
 
-	if (c == EOF) {
-		return 0;
-	}
-	else {
-		return (uint32_t)c;
-	}
+    if (c == EOF) {
+        return 0;
+    }
+    else {
+        return (uint32_t)c;
+    }
 }

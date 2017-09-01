@@ -39,9 +39,9 @@ static size_t buffer_start;
 static size_t buffer_end;
 
 static port_entry kbd_port = {
-	"Window keyboard v2",
-	keyboard_set_interrupt,
-	keyboard_read_queue // Port reads come from the buffer.
+    "Window keyboard v2",
+    keyboard_set_interrupt,
+    keyboard_read_queue // Port reads come from the buffer.
 };
 
 // We need a place to store the port number we are assigned
@@ -55,32 +55,32 @@ static SDL_mutex *kbd_mutex;
 
 error_t install_keyboard_handler()
 {
-	kbd_mutex = SDL_CreateMutex();
-	if (!kbd_mutex) {
-		return ERR_EXTERN;
-	}
+    kbd_mutex = SDL_CreateMutex();
+    if (!kbd_mutex) {
+        return ERR_EXTERN;
+    }
 
-	return port_install(&kbd_port, &assigned_port);
+    return port_install(&kbd_port, &assigned_port);
 }
 
 void keyboard_queue_press(kbd_scancode code)
 {
-	if (SDL_LockMutex(kbd_mutex) != 0) {
-		return;
-	}
+    if (SDL_LockMutex(kbd_mutex) != 0) {
+        return;
+    }
 
-	scancode_buffer[buffer_end] = code;
+    scancode_buffer[buffer_end] = code;
 
-	buffer_end = (buffer_end + 1) % KBD_BUFFER_SIZE;
-	if (buffer_end == buffer_start) {
+    buffer_end = (buffer_end + 1) % KBD_BUFFER_SIZE;
+    if (buffer_end == buffer_start) {
         buffer_start = (buffer_start + 1) % KBD_BUFFER_SIZE;
-	}
+    }
 
-	if (do_interrupt) {
+    if (do_interrupt) {
         interrupt_raise(INTR_KBD);
-	}
+    }
 
-	SDL_UnlockMutex(kbd_mutex);
+    SDL_UnlockMutex(kbd_mutex);
 }
 
 error_t remove_keyboard_handler()
@@ -88,7 +88,7 @@ error_t remove_keyboard_handler()
     SDL_DestroyMutex(kbd_mutex);
     kbd_mutex = NULL;
 
-	return port_remove(assigned_port);
+    return port_remove(assigned_port);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,22 +104,22 @@ void keyboard_set_interrupt(port_id num, uint32_t data)
 
 uint32_t keyboard_read_queue(port_id num)
 {
-	(void)num;
+    (void)num;
 
-	if (SDL_LockMutex(kbd_mutex) != 0) {
-		return 0;
-	}
+    if (SDL_LockMutex(kbd_mutex) != 0) {
+        return 0;
+    }
 
-	uint32_t ret;
+    uint32_t ret;
 
-	if (buffer_start == buffer_end) {
-		ret = 0;
-	}
-	else {
-		ret = scancode_buffer[buffer_start];
-		buffer_start = (buffer_start + 1) % KBD_BUFFER_SIZE;
-	}
+    if (buffer_start == buffer_end) {
+        ret = 0;
+    }
+    else {
+        ret = scancode_buffer[buffer_start];
+        buffer_start = (buffer_start + 1) % KBD_BUFFER_SIZE;
+    }
 
-	SDL_UnlockMutex(kbd_mutex);
-	return ret;
+    SDL_UnlockMutex(kbd_mutex);
+    return ret;
 }

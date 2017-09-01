@@ -59,81 +59,81 @@ static void mark_unused(port_id num);
 
 error_t port_install(port_entry *cfg, port_id *num)
 {
-	*num = next_unused();
+    *num = next_unused();
 
-	return bind_port(*num, cfg);
+    return bind_port(*num, cfg);
 }
 
 error_t port_remove(port_id num)
 {
-	error_t stat = unbind_port(num);
+    error_t stat = unbind_port(num);
 
-	// If the unbinding failed, the port may not be valid
-	// So don't attempt to reuse it.
-	if (stat == ERR_NOERR) {
-		mark_unused(num);
-	}
+    // If the unbinding failed, the port may not be valid
+    // So don't attempt to reuse it.
+    if (stat == ERR_NOERR) {
+        mark_unused(num);
+    }
 
-	return stat;
+    return stat;
 }
 
 error_t port_write(port_id num, uint32_t data)
 {
-	if (!IS_VALID_PORT(num)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_PORT(num)) {
+        return ERR_INVAL;
+    }
 
-	const port_entry *curr = ports[num];
+    const port_entry *curr = ports[num];
 
-	if (curr == NULL) {
-		return ERR_PCOND;
-	}
+    if (curr == NULL) {
+        return ERR_PCOND;
+    }
 
-	// Default write handler just swallows the data
-	// So we don't error on NULL here
-	if (curr->write != NULL) {
-		curr->write(num, data);
-	}
+    // Default write handler just swallows the data
+    // So we don't error on NULL here
+    if (curr->write != NULL) {
+        curr->write(num, data);
+    }
 
-	return ERR_NOERR;
+    return ERR_NOERR;
 }
 
 error_t port_read(port_id num, uint32_t *data)
 {
-	if (!IS_VALID_PORT(num)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_PORT(num)) {
+        return ERR_INVAL;
+    }
 
-	const port_entry *curr = ports[num];
+    const port_entry *curr = ports[num];
 
-	if (curr == NULL) {
-		return ERR_PCOND;
-	}
+    if (curr == NULL) {
+        return ERR_PCOND;
+    }
 
-	if (curr->read != NULL) {
-		*data = curr->read(num);
-	}
-	else {
-		// Default read handler is an endless stream of zeros
-		*data = 0;
-	}
+    if (curr->read != NULL) {
+        *data = curr->read(num);
+    }
+    else {
+        // Default read handler is an endless stream of zeros
+        *data = 0;
+    }
 
-	return ERR_NOERR;
+    return ERR_NOERR;
 }
 
 const char *port_get_ident(port_id num)
 {
-	if (!IS_VALID_PORT(num)) {
-		return NULL;
-	}
+    if (!IS_VALID_PORT(num)) {
+        return NULL;
+    }
 
-	const port_entry *curr = ports[num];
+    const port_entry *curr = ports[num];
 
-	if (curr == NULL) {
-		return NULL;
-	}
+    if (curr == NULL) {
+        return NULL;
+    }
 
-	return curr->ident;
+    return curr->ident;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,30 +142,30 @@ const char *port_get_ident(port_id num)
 
 error_t bind_port(port_id num, port_entry *cfg)
 {
-	if (!IS_VALID_PORT(num)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_PORT(num)) {
+        return ERR_INVAL;
+    }
 
-	if (ports[num] != NULL) {
-		return ERR_PCOND;
-	}
+    if (ports[num] != NULL) {
+        return ERR_PCOND;
+    }
 
-	ports[num] = cfg;
-	return ERR_NOERR;
+    ports[num] = cfg;
+    return ERR_NOERR;
 }
 
 error_t unbind_port(port_id num)
 {
-	if (!IS_VALID_PORT(num)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_PORT(num)) {
+        return ERR_INVAL;
+    }
 
-	if (ports[num] == NULL) {
-		return ERR_PCOND;
-	}
+    if (ports[num] == NULL) {
+        return ERR_PCOND;
+    }
 
-	ports[num] = NULL;
-	return ERR_NOERR;
+    ports[num] = NULL;
+    return ERR_NOERR;
 }
 
 // Used to hold state for the following two functions
@@ -173,32 +173,32 @@ static port_id next_alloc;
 
 port_id next_unused()
 {
-	// First check the next_alloc variable
-	// If it's good, we're good
-	// Otherwise we have to go hunting
-	if (ports[next_alloc] != NULL) {
-		for (port_id i = 0; IS_VALID_PORT(i); ++i) {
-			if (ports[i] == NULL) {
-				next_alloc = i;
-				break;
-			}
-		}
-	}
+    // First check the next_alloc variable
+    // If it's good, we're good
+    // Otherwise we have to go hunting
+    if (ports[next_alloc] != NULL) {
+        for (port_id i = 0; IS_VALID_PORT(i); ++i) {
+            if (ports[i] == NULL) {
+                next_alloc = i;
+                break;
+            }
+        }
+    }
 
-	port_id to_ret = next_alloc;
+    port_id to_ret = next_alloc;
 
-	if (!IS_VALID_PORT(++next_alloc)) {
-		next_alloc = 0;
-	}
+    if (!IS_VALID_PORT(++next_alloc)) {
+        next_alloc = 0;
+    }
 
-	return to_ret;
+    return to_ret;
 }
 
 void mark_unused(port_id num)
 {
-	// We want to prefer low-numbered ports
-	if (num < next_alloc) {
-		next_alloc = num;
-	}
+    // We want to prefer low-numbered ports
+    if (num < next_alloc) {
+        next_alloc = num;
+    }
 }
 

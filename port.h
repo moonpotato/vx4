@@ -16,9 +16,9 @@ typedef void (*port_out_pf)(port_id, uint32_t);
 typedef uint32_t (*port_in_pf)(port_id);
 
 typedef struct _port_entry {
-	const char *ident; // A string identifying the owner of the port
-	port_out_pf write; // Called whenever the port is written to
-	port_in_pf read; // Called whenever the port is read from
+    const char *ident; // A string identifying the owner of the port
+    port_out_pf write; // Called whenever the port is written to
+    port_in_pf read; // Called whenever the port is read from
 } port_entry;
 
 ////////////////////////////////////////////////////////////////////////////////

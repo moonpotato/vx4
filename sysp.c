@@ -46,17 +46,17 @@ static uint32_t command_execute(port_id num);
 static void command_clear();
 
 static port_entry system_port = {
-	"System command",
-	command_issue,
-	command_execute
+    "System command",
+    command_issue,
+    command_execute
 };
 
 // We need a place to store the port number we are assigned
 static port_id assigned_port;
 
 typedef struct _sys_operation {
-	sys_action act;
-	uint32_t data;
+    sys_action act;
+    uint32_t data;
 } sys_operation;
 
 // Current operation as set by command_issue and read by command_execute
@@ -64,9 +64,9 @@ static sys_operation curr_op;
 
 // Used by multiple state machine-type procedures
 typedef enum _cmd_state {
-	CMD_START,
-	CMD_MID,
-	CMD_DONE,
+    CMD_START,
+    CMD_MID,
+    CMD_DONE,
 } cmd_state;
 
 // Implementations of specific commands
@@ -88,12 +88,12 @@ static uint32_t read_port_ident(port_id port, bool reset);
 
 error_t install_system_handler()
 {
-	return port_install(&system_port, &assigned_port);
+    return port_install(&system_port, &assigned_port);
 }
 
 error_t remove_system_handler()
 {
-	return port_remove(assigned_port);
+    return port_remove(assigned_port);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -102,107 +102,107 @@ error_t remove_system_handler()
 
 void command_issue(port_id num, uint32_t command_part)
 {
-	(void)num;
+    (void)num;
 
-	static cmd_state state = CMD_START;
+    static cmd_state state = CMD_START;
 
-	switch (state) {
-		case CMD_START:
-			if (command_part == SYS_CLEAR) {
-				command_clear();
-				state = CMD_START;
-			}
-			else {
-				curr_op.act = (int)command_part;
-				state = CMD_MID;
-			}
-			break;
+    switch (state) {
+        case CMD_START:
+            if (command_part == SYS_CLEAR) {
+                command_clear();
+                state = CMD_START;
+            }
+            else {
+                curr_op.act = (int)command_part;
+                state = CMD_MID;
+            }
+            break;
 
-		case CMD_MID:
-			// A null byte doesn't interrupt here
-			// We might actually _want_ a zero as our data
-			// But if we've issued a one-word command, this means
-			// We need to write _two_ zeros to correctly reset
-			curr_op.data = command_part;
-			state = CMD_DONE;
-			break;
+        case CMD_MID:
+            // A null byte doesn't interrupt here
+            // We might actually _want_ a zero as our data
+            // But if we've issued a one-word command, this means
+            // We need to write _two_ zeros to correctly reset
+            curr_op.data = command_part;
+            state = CMD_DONE;
+            break;
 
-		case CMD_DONE:
-			if (command_part == SYS_CLEAR) {
-				command_clear();
-				state = CMD_START;
-			}
-			break;
-	}
+        case CMD_DONE:
+            if (command_part == SYS_CLEAR) {
+                command_clear();
+                state = CMD_START;
+            }
+            break;
+    }
 }
 
 uint32_t command_execute(port_id num)
 {
-	(void)num;
+    (void)num;
 
-	switch (curr_op.act) {
-		case SYS_CLEAR:
-		default:
-			return 0;
+    switch (curr_op.act) {
+        case SYS_CLEAR:
+        default:
+            return 0;
 
-		case SYS_RESET:
-			cpu_queue_reset();
-			return SYS_RESET;
+        case SYS_RESET:
+            cpu_queue_reset();
+            return SYS_RESET;
 
-		case SYS_HALT:
-			cpu_queue_halt();
-			return SYS_HALT;
+        case SYS_HALT:
+            cpu_queue_halt();
+            return SYS_HALT;
 
-		case SYS_PORTINFO:
-			return read_port_ident(curr_op.data, false);
-	}
+        case SYS_PORTINFO:
+            return read_port_ident(curr_op.data, false);
+    }
 }
 
 void command_clear()
 {
-	curr_op.act = SYS_CLEAR;
-	curr_op.data = 0;
+    curr_op.act = SYS_CLEAR;
+    curr_op.data = 0;
 
-	read_port_ident(0, true);
+    read_port_ident(0, true);
 }
 
 uint32_t read_port_ident(port_id port, bool reset)
 {
-	static cmd_state state = CMD_START;
+    static cmd_state state = CMD_START;
 
-	static const char *ident = NULL;
-	static size_t pos = 0;
+    static const char *ident = NULL;
+    static size_t pos = 0;
 
-	if (reset) {
-		ident = NULL;
-		pos = 0;
+    if (reset) {
+        ident = NULL;
+        pos = 0;
 
-		state = CMD_START;
-		return 0;
-	}
+        state = CMD_START;
+        return 0;
+    }
 
-	switch (state) {
-		default:
-		case CMD_START:
-			ident = port_get_ident(port);
-			state = CMD_MID;
-			// fallthrough
+    switch (state) {
+        default:
+        case CMD_START:
+            ident = port_get_ident(port);
+            state = CMD_MID;
+            // fallthrough
 
-		case CMD_MID:
-			if (ident == NULL) {
-				return 0;
-			}
-			else {
-				char out = ident[pos++];
+        case CMD_MID:
+            if (ident == NULL) {
+                return 0;
+            }
+            else {
+                char out = ident[pos++];
 
-				if (out == 0) {
-					state = CMD_DONE;
-				}
+                if (out == 0) {
+                    state = CMD_DONE;
+                }
 
-				return out;
-			}
+                return out;
+            }
 
-		case CMD_DONE:
-			return 0;
-	}
+        case CMD_DONE:
+            return 0;
+    }
 }

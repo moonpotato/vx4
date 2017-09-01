@@ -34,9 +34,9 @@ instruction_info instructions[] = {
     {instruction_addrc, 6},
     {instruction_movprr, 2},
     {instruction_outscr, 4},
-	{instruction_inxrsc, 4},
-	{instruction_cli, 0},
-	{instruction_sti, 0},
+    {instruction_inxrsc, 4},
+    {instruction_cli, 0},
+    {instruction_sti, 0},
 };
 
 #define INS_NUM_INS (sizeof (instructions) / sizeof (instruction_info))
@@ -48,7 +48,7 @@ instruction_info instructions[] = {
 
 bool valid_instruction(instruction_id ins)
 {
-	return IS_VALID_INSTRUCTION(ins);
+    return IS_VALID_INSTRUCTION(ins);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,31 +57,31 @@ bool valid_instruction(instruction_id ins)
 
 error_t instruction_nop(void *data)
 {
-	(void)data;
-	return ERR_NOERR;
+    (void)data;
+    return ERR_NOERR;
 }
 
 error_t instruction_hlt(void *data)
 {
-	(void)data;
+    (void)data;
 
-	cpu_queue_halt();
-	return ERR_NOERR;
+    cpu_queue_halt();
+    return ERR_NOERR;
 }
 
 error_t instruction_jmpc(void *data)
 {
-	cpu_queue_jump(*(mem_addr *)data);
-	return ERR_NOERR;
+    cpu_queue_jump(*(mem_addr *)data);
+    return ERR_NOERR;
 }
 
 error_t instruction_movrc(void *data)
 {
-	reg_id *dest = (reg_id *)data;
+    reg_id *dest = (reg_id *)data;
     uint32_t *src = (uint32_t *)(dest + 1);
 
     if (!IS_VALID_REGISTER(*dest)) {
-		return ERR_INVAL;
+        return ERR_INVAL;
     }
 
     reg_write_word(*dest, *src);
@@ -90,25 +90,25 @@ error_t instruction_movrc(void *data)
 
 error_t instruction_movpcr(void *data)
 {
-	mem_addr *dest = (mem_addr *)data;
-	reg_id *src = (reg_id *)(dest + 1);
+    mem_addr *dest = (mem_addr *)data;
+    reg_id *src = (reg_id *)(dest + 1);
 
-	if (!IS_VALID_REGISTER(*src)) {
-		return ERR_INVAL;
-	}
+    if (!IS_VALID_REGISTER(*src)) {
+        return ERR_INVAL;
+    }
 
-	uint32_t word;
+    uint32_t word;
     reg_read_word(*src, &word);
     return mem_write_word(*dest, word);
 }
 
 error_t instruction_addrc(void *data)
 {
-	reg_id *dest = (reg_id *)data;
+    reg_id *dest = (reg_id *)data;
     uint32_t *src = (uint32_t *)(dest + 1);
 
     if (!IS_VALID_REGISTER(*dest)) {
-		return ERR_INVAL;
+        return ERR_INVAL;
     }
 
     uint32_t word;
@@ -121,14 +121,14 @@ error_t instruction_addrc(void *data)
 
 error_t instruction_movprr(void *data)
 {
-	reg_id *dest = (reg_id *)data;
-	reg_id *src = (reg_id *)(dest + 1);
+    reg_id *dest = (reg_id *)data;
+    reg_id *src = (reg_id *)(dest + 1);
 
-	if (!IS_VALID_REGISTER(*dest)) {
-		return ERR_INVAL;
+    if (!IS_VALID_REGISTER(*dest)) {
+        return ERR_INVAL;
     }
     if (!IS_VALID_REGISTER(*src)) {
-		return ERR_INVAL;
+        return ERR_INVAL;
     }
 
     mem_addr where;
@@ -141,14 +141,14 @@ error_t instruction_movprr(void *data)
 
 error_t instruction_outscr(void *data)
 {
-	port_id *dest = (port_id *)data;
-	reg_id *src = (reg_id *)(dest + 1);
+    port_id *dest = (port_id *)data;
+    reg_id *src = (reg_id *)(dest + 1);
 
-	if (!IS_VALID_PORT(*dest)) {
-		return ERR_INVAL;
+    if (!IS_VALID_PORT(*dest)) {
+        return ERR_INVAL;
     }
     if (!IS_VALID_REGISTER(*src)) {
-		return ERR_INVAL;
+        return ERR_INVAL;
     }
 
     uint32_t word;
@@ -160,14 +160,14 @@ error_t instruction_outscr(void *data)
 
 error_t instruction_inxrsc(void *data)
 {
-	reg_id *dest = (reg_id *)data;
-	port_id *src = (port_id *)(dest + 1);
+    reg_id *dest = (reg_id *)data;
+    port_id *src = (port_id *)(dest + 1);
 
-	if (!IS_VALID_REGISTER(*dest)) {
-		return ERR_INVAL;
+    if (!IS_VALID_REGISTER(*dest)) {
+        return ERR_INVAL;
     }
     if (!IS_VALID_PORT(*src)) {
-		return ERR_INVAL;
+        return ERR_INVAL;
     }
 
     uint32_t word;
@@ -179,16 +179,16 @@ error_t instruction_inxrsc(void *data)
 
 error_t instruction_cli(void *data)
 {
-	(void)data;
-	cpu_interrupt_set(false);
+    (void)data;
+    cpu_interrupt_set(false);
 
-	return ERR_NOERR;
+    return ERR_NOERR;
 }
 
 error_t instruction_sti(void *data)
 {
-	(void)data;
-	cpu_interrupt_set(true);
+    (void)data;
+    cpu_interrupt_set(true);
 
-	return ERR_NOERR;
+    return ERR_NOERR;
 }

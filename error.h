@@ -7,23 +7,23 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef enum _error_t {
-	ERR_NOERR,
-	ERR_PCOND,
-	ERR_NOMEM,
-	ERR_INVAL,
-	ERR_AGAIN,
-	ERR_EXTERN,
-	ERR_FILE,
-	ERR_PORT,
+    ERR_NOERR,
+    ERR_PCOND,
+    ERR_NOMEM,
+    ERR_INVAL,
+    ERR_AGAIN,
+    ERR_EXTERN,
+    ERR_FILE,
+    ERR_PORT,
 } error_t;
 
 #define DIE_ON(expr) \
-	do { \
-		error_t code = (expr); \
-		if (code != ERR_NOERR) { \
-			error_exit(code, __FILE__, __LINE__, NULL); \
-		} \
-	} while (0)
+    do { \
+        error_t code = (expr); \
+        if (code != ERR_NOERR) { \
+            error_exit(code, __FILE__, __LINE__, NULL); \
+        } \
+    } while (0)
 
 
 ////////////////////////////////////////////////////////////////////////////////
