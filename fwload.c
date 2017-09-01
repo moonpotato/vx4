@@ -19,16 +19,19 @@ error_t firmware_load(mem_addr loc, const char *filename)
 	}
 
 	if (fseek(fw_file, 0, SEEK_END) != 0) {
+		fclose(fw_file);
 		return ERR_FILE;
 	}
 
 	long fw_size = ftell(fw_file);
 	if (fw_size == -1L) {
+		fclose(fw_file);
 		return ERR_FILE;
 	}
 
 	uint8_t *fw_buf = malloc(fw_size);
 	if (fw_buf == NULL) {
+		fclose(fw_file);
 		return ERR_NOMEM;
 	}
 
@@ -36,6 +39,7 @@ error_t firmware_load(mem_addr loc, const char *filename)
 	size_t read = fread(fw_buf, 1, fw_size, fw_file);
 
 	if ((long)read != fw_size) {
+		fclose(fw_file);
 		free(fw_buf);
 		return ERR_FILE;
 	}
