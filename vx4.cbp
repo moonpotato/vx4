@@ -37,6 +37,7 @@
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
 			<Add option="-std=gnu11" />
+			<Add option="-fwrapv" />
 		</Compiler>
 		<Linker>
 			<Add library="SDL2main" />
