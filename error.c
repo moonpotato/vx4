@@ -50,6 +50,7 @@ noreturn void error_exit(error_t err_code, const char *file, unsigned line, cons
 
 		case ERR_PORT:
 			msg = "An error occurred trying to acquire a port";
+			break;
 
 		default:
 			msg = "An unspecified error occurred";
